@@ -1,5 +1,6 @@
-# Alpine is a very small base package.  Consider ubuntu:20.04 if you want something more full featured.
-FROM docker.dyn.ntnxdpro.com/ntnx-general-docker/alpine:latest
+FROM gcr.io/distroless/static:latest
+LABEL maintainers="Nutanix COSI Authors"
+LABEL description="Nutanix COSI driver"
+COPY ./bin/ntnx-system ntnx-system
+ENTRYPOINT ["/ntnx-system"]
 
-# Please add your own instructions below to build your docker image.
-CMD echo 'Hello, World'
