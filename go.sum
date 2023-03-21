@@ -453,6 +453,7 @@ github.com/mitchellh/mapstructure v0.0.0-20160808181253-ca63d7c062ee/go.mod h1:F
 github.com/mitchellh/mapstructure v1.1.2/go.mod h1:FVVH3fgwuzCH5S8UJGiWEs2h04kUh9fWfEaFds41c1Y=
 github.com/mitchellh/mapstructure v1.4.3 h1:OVowDSCllw/YjdLkam3/sm7wEtOy59d8ndGgCcyj8cs=
 github.com/mitchellh/mapstructure v1.4.3/go.mod h1:bFUtVrKA4DC2yAKiSyO/QUcy7e+RRV2QTWOzhPopBRo=
+github.com/mitchellh/protoc-gen-go-json v1.1.0/go.mod h1:pACAKlMtBf4SMFbVswcjwNwWwlci6Vn841H5jPRcE9I=
 github.com/moby/spdystream v0.2.0/go.mod h1:f7i0iNDQJ059oMTcWxx8MA/zKFIuD/lY+0GqbN2Wy8c=
 github.com/modern-go/concurrent v0.0.0-20180228061459-e0a39a4cb421/go.mod h1:6dJC0mAP4ikYIbvyc7fijjWJddQyLn8Ig3JB5CqoB9Q=
 github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd/go.mod h1:6dJC0mAP4ikYIbvyc7fijjWJddQyLn8Ig3JB5CqoB9Q=
@@ -1148,8 +1149,8 @@ sigs.k8s.io/container-object-storage-interface-provisioner-sidecar v0.0.0-202105
 sigs.k8s.io/container-object-storage-interface-provisioner-sidecar v0.0.0-20210528161624-b46634c30d14/go.mod h1:f0JfR9/8unxtADsMCD8JxebnkAWUTu11C7VGNEUqGVU=
 sigs.k8s.io/container-object-storage-interface-spec v0.0.0-20210329232956-3bbacbbc9c19/go.mod h1:kafkL5l/lTUrZXhVi/9p1GzpEE/ts29BkWkL3Ao33WU=
 sigs.k8s.io/container-object-storage-interface-spec v0.0.0-20210507203703-a97f2e98ac90/go.mod h1:kafkL5l/lTUrZXhVi/9p1GzpEE/ts29BkWkL3Ao33WU=
-sigs.k8s.io/container-object-storage-interface-spec v0.0.0-20220211001052-50e143052de8 h1:VHOCO/XTuYN/ycnEMpSrFQRwEcNOuhG5h6vhQgBUZlw=
-sigs.k8s.io/container-object-storage-interface-spec v0.0.0-20220211001052-50e143052de8/go.mod h1:kafkL5l/lTUrZXhVi/9p1GzpEE/ts29BkWkL3Ao33WU=
+sigs.k8s.io/container-object-storage-interface-spec v0.1.0 h1:WHeei3OywFyebPwBkVUuuV1SuGjG6Qm4BBmnfFTVa1Y=
+sigs.k8s.io/container-object-storage-interface-spec v0.1.0/go.mod h1:SzF/yVSh88TgYdBOAXqhT96XjU8pCQtoeQKxzIOOmWQ=
 sigs.k8s.io/controller-runtime v0.6.3/go.mod h1:WlZNXcM0++oyaQt4B7C2lEE5JYRs8vJUzRP4N4JpdAY=
 sigs.k8s.io/json v0.0.0-20211020170558-c049b76a60c6 h1:fD1pz4yfdADVNfFmcP2aBEtudwUQ1AlLnRBALr33v3s=
 sigs.k8s.io/json v0.0.0-20211020170558-c049b76a60c6/go.mod h1:p4QtZmO4uMYipTQNzagwnNoseA6OxSUutVw05NhYDRs=

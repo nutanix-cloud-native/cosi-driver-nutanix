@@ -11,7 +11,7 @@ require (
 	k8s.io/apimachinery v0.23.5
 	k8s.io/klog/v2 v2.60.1
 	sigs.k8s.io/container-object-storage-interface-provisioner-sidecar v0.0.0-20210528161624-b46634c30d14
-	sigs.k8s.io/container-object-storage-interface-spec v0.0.0-20220211001052-50e143052de8
+	sigs.k8s.io/container-object-storage-interface-spec v0.1.0
 )
 
 require (
