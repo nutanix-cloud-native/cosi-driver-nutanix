@@ -3,7 +3,7 @@ module github.com/nutanix-core/k8s-ntnx-object-cosi
 go 1.17
 
 require (
-	github.com/aws/aws-sdk-go v1.43.28
+	github.com/aws/aws-sdk-go v1.44.225
 	github.com/spf13/cobra v1.4.0
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.10.1
@@ -29,9 +29,9 @@ require (
 	github.com/spf13/cast v1.4.1 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/subosito/gotenv v1.2.0 // indirect
-	golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd // indirect
-	golang.org/x/sys v0.0.0-20211216021012-1d35b9e2eb4e // indirect
-	golang.org/x/text v0.3.7 // indirect
+	golang.org/x/net v0.1.0 // indirect
+	golang.org/x/sys v0.1.0 // indirect
+	golang.org/x/text v0.4.0 // indirect
 	google.golang.org/genproto v0.0.0-20211208223120-3a66f561d7aa // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
 	gopkg.in/ini.v1 v1.66.2 // indirect
