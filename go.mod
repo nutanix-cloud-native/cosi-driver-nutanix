@@ -3,7 +3,7 @@ module github.com/nutanix-core/k8s-ntnx-object-cosi
 go 1.19
 
 require (
-	github.com/aws/aws-sdk-go v1.43.28
+	github.com/aws/aws-sdk-go v1.44.227
 	github.com/spf13/cobra v1.6.1
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.15.0
