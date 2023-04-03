@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-CMDS=cosi-driver-nutanix
+CMDS=ntnx-system
 
 REGISTRY_NAME=quay.io/ntnxcosi
 IMAGE_TAGS=canary

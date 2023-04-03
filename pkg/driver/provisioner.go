@@ -17,7 +17,6 @@ package driver
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	ntnxIam "github.com/nutanix-core/k8s-ntnx-object-cosi/pkg/admin"
@@ -44,19 +43,13 @@ type ProvisionerServer struct {
 //    nil -                   Bucket successfully created
 //    codes.AlreadyExists -   Bucket already exists. No more retries
 //    non-nil err -           Internal error                                [requeue'd with exponential backoff]
-func (s *ProvisionerServer) ProvisionerCreateBucket(ctx context.Context,
-	req *cosi.ProvisionerCreateBucketRequest) (*cosi.ProvisionerCreateBucketResponse, error) {
+func (s *ProvisionerServer) DriverCreateBucket(ctx context.Context,
+	req *cosi.DriverCreateBucketRequest) (*cosi.DriverCreateBucketResponse, error) {
 	klog.InfoS("Using Nutanix Object store to create Backend Bucket")
-	protocol := req.GetProtocol()
-	if protocol == nil {
-		klog.ErrorS(errNilProtocol, "Protocol is nil")
-		return nil, status.Error(codes.InvalidArgument, "Protocol is nil")
-	}
-	s3 := protocol.GetS3()
-	if s3 == nil {
-		klog.ErrorS(errs3ProtocolMissing, "S3 protocol is missing, only S3 is supported")
-		return nil, status.Error(codes.InvalidArgument, "only S3 protocol supported")
-	}
+
+	// Get the name of the bucket from the request which is formed
+	// by getting the name from the bucket object which is created
+	// by the cosi-central-controller.
 	bucketName := req.GetName()
 	klog.V(3).InfoS("Creating Bucket", "name", bucketName)
 
@@ -68,13 +61,14 @@ func (s *ProvisionerServer) ProvisionerCreateBucket(ctx context.Context,
 	}
 	klog.InfoS("Successfully created Backend Bucket on Nutanix Objects", "bucketName", bucketName)
 
-	return &cosi.ProvisionerCreateBucketResponse{
+	// Not sure what bucketInfo Stores
+	return &cosi.DriverCreateBucketResponse{
 		BucketId: bucketName,
 	}, nil
 }
 
-func (s *ProvisionerServer) ProvisionerDeleteBucket(ctx context.Context,
-	req *cosi.ProvisionerDeleteBucketRequest) (*cosi.ProvisionerDeleteBucketResponse, error) {
+func (s *ProvisionerServer) DriverDeleteBucket(ctx context.Context,
+	req *cosi.DriverDeleteBucketRequest) (*cosi.DriverDeleteBucketResponse, error) {
 	klog.InfoS("Deleting bucket", "id", req.GetBucketId())
 	if _, err := s.s3Client.DeleteBucket(req.GetBucketId()); err != nil {
 		klog.ErrorS(err, "failed to delete bucket %q", req.GetBucketId())
@@ -82,17 +76,21 @@ func (s *ProvisionerServer) ProvisionerDeleteBucket(ctx context.Context,
 	}
 	klog.InfoS("Successfully deleted Bucket", "id", req.GetBucketId())
 
-	return &cosi.ProvisionerDeleteBucketResponse{}, nil
+	return &cosi.DriverDeleteBucketResponse{}, nil
 }
 
-func (s *ProvisionerServer) ProvisionerGrantBucketAccess(ctx context.Context,
-	req *cosi.ProvisionerGrantBucketAccessRequest) (*cosi.ProvisionerGrantBucketAccessResponse, error) {
-	userName := req.GetAccountName() + "@nutanix.com"
-	displayName := s.ntnxIamClient.AccountName + "_" + req.GetAccountName()
+func (s *ProvisionerServer) DriverGrantBucketAccess(ctx context.Context,
+	req *cosi.DriverGrantBucketAccessRequest) (*cosi.DriverGrantBucketAccessResponse, error) {
+	// Form the username for this new user.
+	// username is formed by concatenating the account name prefix
+	// stored in req which is of the form- "ba-<BucketAccessUUID>"
+	// with the suffix "@nutanix.com"
+	userName := req.GetName() + "@nutanix.com"
+	displayName := s.ntnxIamClient.AccountName + "_" + req.GetName()
 	bucketName := req.GetBucketId()
-	accessPolicy := req.GetAccessPolicy()
+
 	klog.InfoS("Granting user accessPolicy to bucket", "userName", userName, "displayName",
-		displayName, "bucketName", bucketName, "accessPolicy", accessPolicy)
+		displayName, "bucketName", bucketName)
 
 	// Format : {type: "external", email: <userName>@nutanix.com, displayname: <accountName>_<userName> (optional)}
 	user, err := s.ntnxIamClient.CreateUser(ctx, userName, displayName)
@@ -128,27 +126,38 @@ func (s *ProvisionerServer) ProvisionerGrantBucketAccess(ctx context.Context,
 		return nil, status.Error(codes.Internal, "failed to set policy")
 	}
 
-	return &cosi.ProvisionerGrantBucketAccessResponse{
+	return &cosi.DriverGrantBucketAccessResponse{
 		AccountId:   user.Users[0].UUID,
-		Credentials: fetchUserCredentials(user, s.ntnxIamClient.Endpoint, bucketName),
+		Credentials: fetchUserCredentials(user, s.ntnxIamClient.Endpoint),
 	}, nil
 }
 
-func (s *ProvisionerServer) ProvisionerRevokeBucketAccess(ctx context.Context,
-	req *cosi.ProvisionerRevokeBucketAccessRequest) (*cosi.ProvisionerRevokeBucketAccessResponse, error) {
-	// TODO : instead of deleting user, revoke its permission and delete only if no more bucket attached to it
+func (s *ProvisionerServer) DriverRevokeBucketAccess(ctx context.Context,
+	req *cosi.DriverRevokeBucketAccessRequest) (*cosi.DriverRevokeBucketAccessResponse, error) {
+
 	klog.InfoS("Deleting user", "id", req.GetAccountId())
 
 	err := s.ntnxIamClient.RemoveUser(ctx, req.GetAccountId())
 	if err != nil {
 		klog.ErrorS(err, "failed to delete user")
 	}
-	return &cosi.ProvisionerRevokeBucketAccessResponse{}, nil
+	return &cosi.DriverRevokeBucketAccessResponse{}, nil
 }
 
-func fetchUserCredentials(user ntnxIam.NutanixUserResp, endpoint, bucketName string) string {
+func fetchUserCredentials(user ntnxIam.NutanixUserResp, endpoint string) map[string]*cosi.CredentialDetails {
 
-	return fmt.Sprintf("AWS_ACCESS_KEY=%s;AWS_SECRET_KEY=%s;ENDPOINT=%s;BUCKET_ID=%s",
-		user.Users[0].BucketsAccessKeys[0].AccessKeyID,
-		user.Users[0].BucketsAccessKeys[0].SecretAccessKey, endpoint, bucketName)
+	secretsMap := make(map[string]string)
+	secretsMap["accessKeyID"] = user.Users[0].BucketsAccessKeys[0].AccessKeyID
+	secretsMap["accessSecretKey"] = user.Users[0].BucketsAccessKeys[0].SecretAccessKey
+	secretsMap["endpoint"] = endpoint
+	// region mapping needs to be updated
+	secretsMap["region"] = "us-east-1"
+
+	creds := &cosi.CredentialDetails{
+		Secrets: secretsMap,
+	}
+
+	credDetailsMap := make(map[string]*cosi.CredentialDetails)
+	credDetailsMap["s3"] = creds
+	return credDetailsMap
 }

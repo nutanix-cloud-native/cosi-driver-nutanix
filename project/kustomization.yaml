@@ -33,20 +33,6 @@ configurations:
  - resources/kustomizeconfig.yaml
 
 vars:
-  - name: IMAGE_ORG
-    objref:
-      name: cosi-driver-ntnx-config
-      kind: ConfigMap
-      apiVersion: v1
-    fieldref:
-      fieldpath: data.OBJECTSTORAGE_PROVISIONER_IMAGE_ORG
-  - name: IMAGE_VERSION
-    objref:
-      name: cosi-driver-ntnx-config
-      kind: ConfigMap
-      apiVersion: v1
-    fieldref:
-      fieldpath: data.OBJECTSTORAGE_PROVISIONER_IMAGE_VERSION
   - name: NTNX_IMAGE_ORG
     objref:
       name: cosi-driver-ntnx-config

@@ -14,32 +14,35 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package driver
+package main
 
 import (
 	"context"
-	"fmt"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 	"k8s.io/klog/v2"
-
-	cosi "sigs.k8s.io/container-object-storage-interface-spec"
 )
 
-type IdentityServer struct {
-	provisioner string
-}
+func main() {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
-func (id *IdentityServer) DriverGetInfo(ctx context.Context,
-	req *cosi.DriverGetInfoRequest) (*cosi.DriverGetInfoResponse, error) {
+	sigs := make(chan os.Signal, 1)
+	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
 
-	if id.provisioner == "" {
-		klog.ErrorS(fmt.Errorf("provisioner name cannot be empty"), "Invalid argument")
-		return nil, status.Error(codes.InvalidArgument, "Provisioner name is empty")
+	go func() {
+		sig := <-sigs
+		klog.InfoS("Signal received", "type", sig)
+		cancel()
+
+		<-time.After(30 * time.Second)
+		os.Exit(1)
+	}()
+
+	if err := cmd.ExecuteContext(ctx); err != nil {
+		klog.ErrorS(err, "Exiting on error")
 	}
-
-	return &cosi.DriverGetInfoResponse{
-		Name: id.provisioner,
-	}, nil
 }

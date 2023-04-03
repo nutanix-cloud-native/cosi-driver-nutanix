@@ -14,8 +14,5 @@ spec:
           mountPath: /data/cosi
   volumes:
   - name: cosi-secrets
-    csi:
-      driver: objectstorage.k8s.io
-      volumeAttributes:
-        bar-name: sample-bar
-        bar-namespace: default
+    secret:
+      secretName: bucketcreds

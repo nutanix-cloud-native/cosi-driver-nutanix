@@ -1,7 +1,8 @@
 kind: BucketAccessClass
 apiVersion: objectstorage.k8s.io/v1alpha1
 metadata:
-  name: sample-bac
-policyActionsConfigMap:
-  name: sample-cm
-  namespace: default
+  name: sample-bucketaccessclass
+driverName: ntnx.objectstorage.k8s.io
+authenticationType: KEY
+parameters:
+  provisioner_data: "test_data"

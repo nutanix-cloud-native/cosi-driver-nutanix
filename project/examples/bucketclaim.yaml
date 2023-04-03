@@ -1,0 +1,8 @@
+kind: BucketClaim
+apiVersion: objectstorage.k8s.io/v1alpha1
+metadata:
+  name: sample-bucketclaim
+spec:
+  bucketClassName: sample-bucketclass
+  protocols:
+  - s3
