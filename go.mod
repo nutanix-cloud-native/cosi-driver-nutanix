@@ -1,6 +1,6 @@
 module github.com/nutanix-core/k8s-ntnx-object-cosi
 
-go 1.20.2
+go 1.20
 
 require (
 	github.com/aws/aws-sdk-go v1.44.67
