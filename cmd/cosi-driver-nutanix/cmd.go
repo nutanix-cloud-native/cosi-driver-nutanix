@@ -46,7 +46,7 @@ var (
 )
 
 var cmd = &cobra.Command{
-	Use:           "ntnx-system",
+	Use:           "cosi-driver-nutanix",
 	Short:         "Kubernetes COSI driver for Nutanix Object Store",
 	SilenceErrors: true,
 	SilenceUsage:  true,
