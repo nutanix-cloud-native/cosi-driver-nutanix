@@ -9,7 +9,7 @@ require (
 	github.com/spf13/viper v1.12.0
 	google.golang.org/grpc v1.46.2
 	k8s.io/apimachinery v0.24.2
-	k8s.io/klog/v2 v2.80.1
+	k8s.io/klog/v2 v2.100.1
 	sigs.k8s.io/container-object-storage-interface-provisioner-sidecar v0.1.0
 	sigs.k8s.io/container-object-storage-interface-spec v0.1.0
 
