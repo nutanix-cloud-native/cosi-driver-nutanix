@@ -1,0 +1,50 @@
+# Default values for cosi-driver-nutanix.
+nameOverride: ""
+fullnameOverride: ""
+
+# Replicas for objectstorage-provisioner deployment containing the nutanix specific cosi-driver along with the COSI sidecar.
+replicas: 1
+
+# cosi-driver-nutanix sidecar image.
+image:
+  registry: ghcr.io/
+  repository: nutanix-cloud-native/cosi-driver-nutanix
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+  pullPolicy: IfNotPresent
+
+# Secret used by the cosi-driver-nutanix sidecar for objects management.
+secret:
+  # Nutanix Object Store instance endpoint, eg. "http://10.51.142.82:80"
+  endpoint: ""
+  # Admin IAM Access key to be used for Nutanix Objects
+  access_key: ""
+  # Admin IAM Secret key to be used for Nutanix Objects
+  secret_key: ""
+  # PC Credentials in format <prism-ip>:<prism-port>:<user>:<password>.
+  # eg. "10.51.142.125:9440:user:password"
+  pc_secret: ""
+  # Account Name is a displayName identifier Prefix for Nutanix
+  # Objects to ensure that multiple requests for the same account
+  # result in only one access token being created
+  # (Default_Prefix: ntnx-cosi-iam-user)
+  account_name: "ntnx-cosi-iam-user"
+
+# COSI central controller specifications.
+cosiController:
+  replicas: 1
+  logLevel: 5
+  image:
+    registry: gcr.io/
+    repository: k8s-staging-sig-storage/objectstorage-controller
+    tag: v20221027-v0.1.1-8-g300019f
+    pullPolicy: Always
+
+# COSI sidecar specifications.
+objectstorageProvisionerSidecar:
+  logLevel: 5
+  image:
+    registry: gcr.io/
+    repository: k8s-staging-sig-storage/objectstorage-sidecar/objectstorage-sidecar@sha256
+    tag: 589c0ad4ef5d0855fe487440e634d01315bc3d883f91c44cb72577ea6e12c890
+    pullPolicy: Always
