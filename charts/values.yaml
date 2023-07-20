@@ -33,7 +33,7 @@ cosiController:
   image:
     registry: gcr.io/
     repository: k8s-staging-sig-storage/objectstorage-controller
-    tag: v20221027-v0.1.1-8-g300019f
+    tag: v20230524-v0.1.1-15-g5240fb3
     pullPolicy: Always
 
 # COSI sidecar specifications.
@@ -41,6 +41,6 @@ objectstorageProvisionerSidecar:
   logLevel: 5
   image:
     registry: gcr.io/
-    repository: k8s-staging-sig-storage/objectstorage-sidecar/objectstorage-sidecar@sha256
-    tag: 589c0ad4ef5d0855fe487440e634d01315bc3d883f91c44cb72577ea6e12c890
+    repository: k8s-staging-sig-storage/objectstorage-sidecar/objectstorage-sidecar
+    tag: v20221117-v0.1.0-22-g0e67387
     pullPolicy: Always
