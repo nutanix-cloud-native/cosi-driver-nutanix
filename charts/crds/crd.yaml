@@ -29,7 +29,7 @@ spec:
               type: string
             authenticationType:
               description: AuthenticationType denotes the style of authentication It
-                can be one of KEY - access, secret tokens based authentication IAM -
+                can be one of Key - access, secret tokens based authentication IAM -
                 implicit authentication of pods to the OSP based on service account
                 mappings
               type: string
@@ -248,7 +248,7 @@ spec:
               internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
               type: string
             deletionPolicy:
-              default: retain
+              default: Retain
               description: 'DeletionPolicy is used to specify how COSI should handle
               deletion of this bucket. There are 2 possible values: - Retain: Indicates
               that the bucket should not be deleted from the OSP - Delete: Indicates
@@ -360,7 +360,7 @@ spec:
                   description: Name of the BucketClass specified in the BucketRequest
                   type: string
                 deletionPolicy:
-                  default: retain
+                  default: Retain
                   description: 'DeletionPolicy is used to specify how COSI should handle
                   deletion of this bucket. There are 2 possible values: - Retain:
                   Indicates that the bucket should not be deleted from the OSP (default)

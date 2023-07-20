@@ -1,30 +1,25 @@
-# COSI Driver Nutanix
+# k8s-ntnx-object-cosi
 Nutanix COSI Driver provides reference implementation for Container Object Storage Interface (COSI) API for Nutanix Object Store
 
 ## Install CRDs
 ```sh
 $ git clone github.com/kubernetes-sigs/container-object-storage-interface-api
 $ cd container-object-storage-interface-api
-$ git checkout 76de08ed3df15100c39e296dc9201563eb32e946
+$ git checkout 2504944fc33162a34a8a95d6f935cf35c4d08762
 $ kubectl create -k .
 ```
 ## Install COSI controller
 ```sh
 $ git clone github.com/kubernetes-sigs/container-object-storage-interface-controller
 $ cd container-object-storage-interface-controller
-$ git checkout eafd6faf360a78f6723d6dd4ced9249499d6b947
+$ git checkout 5240fb3aceded346058bdae116e39fabac8897aa
 $ kubectl create -k .
-```
-## Install Node adapter
-```sh
-$ kubectl create -k github.com/kubernetes-sigs/container-object-storage-interface-csi-adapter
 ```
 
 Following pods will execute in the default namespace :
 ```sh
 NAME                                        READY   STATUS    RESTARTS   AGE
 objectstorage-controller-6fc5f89444-4ws72   1/1     Running   0          2d6h
-objectstorage-csi-adapter-wsl4l             3/3     Running   0          2d6h
 ```
 
 ## Building, Installing, Setting Up
@@ -73,15 +68,16 @@ $ kubectl get bucketaccess
 NAME                                  AGE
 sample-bucketaccess                   5s
 ```
-A new Nutanix Object Store user (userName corresponding to BucketAccess) is created using PC credentials (`secret.yaml`) and the newly created bucket is shared with this new user
+A new Nutanix Object Store user (userName of the format <account-name>_ba-<bucketaccess-UUID>) is created using PC credentials (`secret.yaml`) and the newly created bucket is shared with this new user
 
-```sh
-$ kubectl get bucketaccess
-NAME                                   AGE
-39233394-4e37-4842-bbdd-c97edc7e9483   71s
-```
 ## Consuming the bucket in an app
 In the app, `bucketaccess` can be consumed as a volume mount. A secret is created with the name provided in the bucketaccess spec field `credentialsSecretName` which can be mounted onto to the pod:
+```sh
+$ kubectl get secret
+NAME          TYPE      DATA   AGE
+bucketcreds   Opaque     1     24h
+```
+
 ```yaml
 spec:
   containers:

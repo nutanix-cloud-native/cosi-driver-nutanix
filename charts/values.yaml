@@ -2,9 +2,6 @@
 nameOverride: ""
 fullnameOverride: ""
 
-# Replicas for objectstorage-provisioner deployment containing the nutanix specific cosi-driver along with the COSI sidecar.
-replicas: 1
-
 # cosi-driver-nutanix sidecar image.
 image:
   registry: ghcr.io/
@@ -32,7 +29,6 @@ secret:
 
 # COSI central controller specifications.
 cosiController:
-  replicas: 1
   logLevel: 5
   image:
     registry: gcr.io/

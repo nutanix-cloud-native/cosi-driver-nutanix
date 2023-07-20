@@ -30,7 +30,6 @@ The following table lists the configurable parameters of the cosi-driver-nutanix
 
 | Parameter                                          | Description                                                        | Default                                                                      |
 |----------------------------------------------------|--------------------------------------------------------------------|------------------------------------------------------------------------------|
-| `replicas`                                         | Number of replicas of the objectstorage-provisioner deployment     | `1`                                                                          |
 | `nameOverride`                                     | To override the name of the cosi-driver chart                      | `""`                                                                         |
 | `fullnameOverride`                                 | To override the full name of the cosi-driver chart                 | `""`                                                                         |
 | `image.registry`                                   | Image registry for cosi-driver-nutanix sidecar                     | `ghcr.io/`                                                                   |
@@ -42,7 +41,6 @@ The following table lists the configurable parameters of the cosi-driver-nutanix
 | `secret.secret_key`                                | Admin IAM Secret key to be used for Nutanix Objects                | `""`                                                                         |
 | `secret.pc_secret`                                 | PC Credentials in format <prism-ip>:<prism-port>:<user>:<password> | `""`                                                                         |
 | `secret.account_name`                              | Account Name is a displayName identifier Prefix for Nutanix        | `"ntnx-cosi-iam-user"`                                                       |
-| `cosiController.replicas`                          | Number of replicas of the COSI central controller deployment       | `1`                                                                          |
 | `cosiController.logLevel`                          | Verbosity of logs for COSI central controller deployment           | `5`                                                                          |
 | `cosiController.image.registery`                   | Image registry for COSI central controller deployment              | `gcr.io/`                                                                    |
 | `cosiController.image.repository`                  | Image repository for COSI central controller deployment            | `k8s-staging-sig-storage/objectstorage-controller`                           |
@@ -59,22 +57,22 @@ The following table lists the configurable parameters of the cosi-driver-nutanix
 
 Install the driver in the `cosi-driver-nutanix` namespace (add the `--create-namespace` flag if the namespace does not exist):
 
-```console
-helm install cosi-driver -n cosi-driver-nutanix
-```
+ ```console
+ helm install cosi-driver -n cosi-driver-nutanix
+ ```
 
-Individual configurations can be set by using `--set key=value[,key=value]` like:
-```console
-helm install cosi-driver -n cosi-driver-nutanix . --set replicas=2 
-```
-In the above command `replicas` refers to one of the variables defined in the values.yaml file.
+ Individual configurations can be set by using `--set key=value[,key=value]` like:
+ ```console
+ helm install cosi-driver -n cosi-driver-nutanix . --set cosiController.logLevel=2
+ ```
+ In the above command `cosiController.logLevel` refers to one of the variables defined in the values.yaml file.
 
-All the options can also be specified in a value.yaml file:
+ All the options can also be specified in a value.yaml file:
 
-```console
-helm install cosi-driver -n cosi-driver-nutanix -f value.yaml .
-```
----
+ ```console
+ helm install cosi-driver -n cosi-driver-nutanix -f value.yaml .
+ ```
+ ---
 
 ## Support
 ### Community Plus
