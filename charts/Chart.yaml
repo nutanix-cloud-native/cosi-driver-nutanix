@@ -1,0 +1,15 @@
+apiVersion: v2
+name: cosi-driver-nutanix
+description: A Helm chart to deploy Nutanix COSI driver
+type: application
+version: 0.1.0
+
+appVersion: "v0.0.2"
+
+icon: https://www.nutanix.com/content/dam/nutanix/global/icons/products/svg/Nutanix-Objects-40.svg
+annotations:
+  artifacthub.io/license: Apache-2.0
+
+maintainers:
+  - name: nutanix-cloud-native-bot
+    email: cloudnative@nutanix.com
