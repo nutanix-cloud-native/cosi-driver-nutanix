@@ -94,14 +94,14 @@ spec:
       - envFrom:
         - secretRef:
             name: objectstorage-provisioner
-        image: "{{ .Values.image.registry }}{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         name: cosi-driver-nutanix
         volumeMounts:
         - mountPath: /var/lib/cosi
           name: socket
       - name: objectstorage-provisioner-sidecar
-        image: "{{ .Values.objectstorageProvisionerSidecar.image.registry }}{{ .Values.objectstorageProvisionerSidecar.image.repository }}:{{ .Values.objectstorageProvisionerSidecar.image.tag }}"
+        image: "{{ .Values.objectstorageProvisionerSidecar.image.registry }}/{{ .Values.objectstorageProvisionerSidecar.image.repository }}:{{ .Values.objectstorageProvisionerSidecar.image.tag }}"
         imagePullPolicy: {{ .Values.objectstorageProvisionerSidecar.image.pullPolicy }}
         args:
           - "--v={{ .Values.objectstorageProvisionerSidecar.logLevel }}"

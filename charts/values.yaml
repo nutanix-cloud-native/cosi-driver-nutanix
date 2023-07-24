@@ -4,7 +4,7 @@ fullnameOverride: ""
 
 # cosi-driver-nutanix sidecar image.
 image:
-  registry: ghcr.io/
+  registry: ghcr.io
   repository: nutanix-cloud-native/cosi-driver-nutanix
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
@@ -31,7 +31,7 @@ secret:
 cosiController:
   logLevel: 5
   image:
-    registry: gcr.io/
+    registry: gcr.io
     repository: k8s-staging-sig-storage/objectstorage-controller
     tag: v20230524-v0.1.1-15-g5240fb3
     pullPolicy: Always
@@ -40,7 +40,7 @@ cosiController:
 objectstorageProvisionerSidecar:
   logLevel: 5
   image:
-    registry: gcr.io/
+    registry: gcr.io
     repository: k8s-staging-sig-storage/objectstorage-sidecar/objectstorage-sidecar
     tag: v20221117-v0.1.0-22-g0e67387
     pullPolicy: Always

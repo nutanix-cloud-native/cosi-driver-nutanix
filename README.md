@@ -1,4 +1,4 @@
-# k8s-ntnx-object-cosi
+# COSI Driver Nutanix
 Nutanix COSI Driver provides reference implementation for Container Object Storage Interface (COSI) API for Nutanix Object Store
 
 ## Install CRDs
