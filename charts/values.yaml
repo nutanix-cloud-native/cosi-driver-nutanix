@@ -4,23 +4,24 @@ fullnameOverride: ""
 
 # cosi-driver-nutanix sidecar image.
 image:
-  registry: ghcr.io
-  repository: nutanix-cloud-native/cosi-driver-nutanix
+  registry: abhishek09dh
+  repository: ntnx-cosi-driver
   # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
+  tag: "v0.1"
   pullPolicy: IfNotPresent
 
 # Secret used by the cosi-driver-nutanix sidecar for objects management.
 secret:
+  enabled: true
   # Nutanix Object Store instance endpoint, eg. "http://10.51.142.82:80"
-  endpoint: ""
+  endpoint: "http://10.51.142.33"
   # Admin IAM Access key to be used for Nutanix Objects
-  access_key: ""
+  access_key: "iVmzOBM2zA_ikujM0f4gCbhbi1r8m2UL"
   # Admin IAM Secret key to be used for Nutanix Objects
-  secret_key: ""
+  secret_key: "JhGnSdxAVCoJtwNyVNPKAtz7F0B9lnIt"
   # PC Credentials in format <prism-ip>:<prism-port>:<user>:<password>.
   # eg. "10.51.142.125:9440:user:password"
-  pc_secret: ""
+  pc_secret: "10.44.9.189:9440:admin:Nutanix.123"
   # Account Name is a displayName identifier Prefix for Nutanix
   # Objects to ensure that multiple requests for the same account
   # result in only one access token being created
