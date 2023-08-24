@@ -57,10 +57,10 @@ Already deployed Nutanix object-store
 3. Add a new email address and name and click `Next`.
 <img width="502" alt="Screenshot 2023-08-10 at 4 42 41 PM" src="https://github.com/nutanix-core/k8s-juno/assets/44068648/72494b72-efe9-42c3-8f3c-40f9563aa041">
 
-4. Now click thr `Generate Keys` button.
+4. Now click the `Generate Keys` button.
 <img width="496" alt="Screenshot 2023-08-10 at 4 43 00 PM" src="https://github.com/nutanix-core/k8s-juno/assets/44068648/ed099ee3-cd9d-4025-8052-ddb6ac83eae0">
 
-5. After the keys are generated downlaod the generated keys.
+5. After the keys are generated download the generated keys.
 <img width="494" alt="Screenshot 2023-08-10 at 4 43 16 PM" src="https://github.com/nutanix-core/k8s-juno/assets/44068648/876e3f6d-7faa-4106-88a5-9117ba2424f1">
 
 6. Now, in the `Access Key` tab you will be able to see the person you just added.
@@ -180,10 +180,10 @@ $ cd cosi-driver-nutanix
 $ make build
 ```
 
-Build docker image and provide a custom tag of your own say `SampleRegistry/cosi-driver-nutanix:latest`
+Build and push docker image and for your custom resistry name and image tag 
 ```sh
-$ make container
-$ docker tag ghcr.io/nutanix-cloud-native/cosi-driver-nutanix:latest SampledockerhubUsername/cosi-driver-nutanix:latest
+$ make REGISTRY_NAME=SampleRegistryUsername/cosi-driver-nutanix IMAGE_TAG=latest container
+$ make REGISTRY_NAME=SampleRegistryUsername/cosi-driver-nutanix IMAGE_TAG=latest docker-push
 ```
 
 Your custom image `SampleRegistry/cosi-driver-nutanix:latest` is now ready to be used.

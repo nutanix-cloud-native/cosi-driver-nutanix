@@ -25,7 +25,7 @@ helm uninstall cosi-driver -n cosi-driver-nutanix
 **NOTE**: The CRDs installed via helm will not be deleted from the above command. Those have to manually deleted.
 
 ## Upgrading the chart
-To upgrade the cosi-driver-nutanix chart to a a particular version can be achieved via the helm upgrade command with the following syntax:
+Upgrade the cosi-driver-nutanix chart to a particular version can be achieved via the helm upgrade command with the following syntax:
 helm upgrade [RELEASE] [CHART] [flags]
 
 Example:
@@ -51,7 +51,10 @@ The following table lists the configurable parameters of the cosi-driver-nutanix
 | `secret.endpoint`                                  | Nutanix Object Store instance endpoint                             | `""`                                                                         |
 | `secret.access_key`                                | Admin IAM Access key to be used for Nutanix Objects                | `""`                                                                         |
 | `secret.secret_key`                                | Admin IAM Secret key to be used for Nutanix Objects                | `""`                                                                         |
-| `secret.pc_secret`                                 | PC Credentials in format <prism-ip>:<prism-port>:<user>:<password> | `""`                                                                         |
+| `secret.pc_ip`                                     | PC ip                 | `""`                                       |
+| `secret.pc_port`                                   | PC port               | `""`                                       |
+| `secret.pc_username`                               | PC username           | `""`                                       |
+| `secret.pc_password`                               | PC password           | `""`                                       |
 | `secret.account_name`                              | Account Name is a displayName identifier Prefix for Nutanix        | `"ntnx-cosi-iam-user"`                                                       |
 | `cosiController.logLevel`                          | Verbosity of logs for COSI central controller deployment           | `5`                                                                          |
 | `cosiController.image.registery`                   | Image registry for COSI central controller deployment              | `gcr.io/`                                                                    |
@@ -85,7 +88,7 @@ Install the driver in the `cosi-driver-nutanix` namespace (add the `--create-nam
  ```
 
 ### Steps to update the Nutanix Object store details while installing COSI:
-1. Open Prism Central UI in any browser and go the objects page. Below I already have a object store called `cosi` deployed ready for use. On the right side of the object store, you will see the objects Public IPs which you can use as the endpoint in the format: `http:<objects public ip>:80`.
+1. Open Prism Central UI in any browser and go the objects page. In the below screenshot, already an object store called `cosi` is deployed which is ready for use. On the right side of the object store, you will see the objects Public IPs which you can use as the endpoint in the format: `http:<objects public ip>:80`.
 <img width="1512" alt="Screenshot 2023-08-10 at 4 31 41 PM" src="https://github.com/nutanix-core/k8s-juno/assets/44068648/121ae44f-cb63-452a-a772-cca5ff428cf4">
 
 2. On the side navigation bar click the `Access Keys` tab and then click on `Add People`.
@@ -94,10 +97,10 @@ Install the driver in the `cosi-driver-nutanix` namespace (add the `--create-nam
 3. Add a new email address and name and click `Next`.
 <img width="502" alt="Screenshot 2023-08-10 at 4 42 41 PM" src="https://github.com/nutanix-core/k8s-juno/assets/44068648/72494b72-efe9-42c3-8f3c-40f9563aa041">
 
-4. Now click thr `Generate Keys` button.
+4. Now click the `Generate Keys` button.
 <img width="496" alt="Screenshot 2023-08-10 at 4 43 00 PM" src="https://github.com/nutanix-core/k8s-juno/assets/44068648/ed099ee3-cd9d-4025-8052-ddb6ac83eae0">
 
-5. After the keys are generated downlaod the generated keys.
+5. After the keys are generated download the generated keys.
 <img width="494" alt="Screenshot 2023-08-10 at 4 43 16 PM" src="https://github.com/nutanix-core/k8s-juno/assets/44068648/876e3f6d-7faa-4106-88a5-9117ba2424f1">
 
 6. Now, in the `Access Key` tab you will be able to see the person you just added.

@@ -44,5 +44,9 @@ container-%: build-%
 build: $(CMDS:%=build-%)
 container: $(CMDS:%=container-%)
 
+.PHONY: docker-push
+docker-push:
+	docker push $(REGISTRY_NAME):$(IMAGE_TAG)
+
 clean:
 	-rm -rf bin
