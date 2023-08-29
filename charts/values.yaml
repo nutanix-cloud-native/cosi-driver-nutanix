@@ -12,18 +12,21 @@ image:
 
 # Secret used by the cosi-driver-nutanix sidecar for objects management.
 secret:
-  # Nutanix Object Store instance endpoint, eg. "http://10.51.142.82:80"
+  enabled: true
+  # Nutanix Object Store instance endpoint, eg. "http://10.51.142.82:80".
   endpoint: ""
-  # Admin IAM Access key to be used for Nutanix Objects
+  # Admin IAM Access key to be used for Nutanix Objects.
   access_key: ""
-  # Admin IAM Secret key to be used for Nutanix Objects
+  # Admin IAM Secret key to be used for Nutanix Objects.
   secret_key: ""
-  # PC Credentials in format <prism-ip>:<prism-port>:<user>:<password>.
-  # eg. "10.51.142.125:9440:user:password"
-  pc_secret: ""
-  # Account Name is a displayName identifier Prefix for Nutanix
+  # PC Credentials.
+  pc_ip: ""
+  pc_port: ""
+  pc_username: ""
+  pc_password: ""
+  # Account Name is a displayName identifier Prefix for Nutanix.
   # Objects to ensure that multiple requests for the same account
-  # result in only one access token being created
+  # result in only one access token being created.
   # (Default_Prefix: ntnx-cosi-iam-user)
   account_name: "ntnx-cosi-iam-user"
 

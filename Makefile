@@ -14,8 +14,8 @@
 
 CMDS=cosi-driver-nutanix
 
-REGISTRY_NAME=quay.io/ntnxcosi
-IMAGE_TAGS=canary
+REGISTRY_NAME=ghcr.io/nutanix-cloud-native/cosi-driver-nutanix
+IMAGE_TAG=latest
 
 all: build
 
@@ -39,10 +39,14 @@ build-%:
 	CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-X main.version=$(REV) -extldflags "-static"' -o ./bin/$* ./cmd/$*
 
 container-%: build-%
-	docker build -t ntnx-cosi-driver:latest -f package/docker/Dockerfile --label revision=$(REV) .
+	docker build -t $(REGISTRY_NAME):$(IMAGE_TAG) -f package/docker/Dockerfile --label revision=$(REV) .
 
 build: $(CMDS:%=build-%)
 container: $(CMDS:%=container-%)
+
+.PHONY: docker-push
+docker-push:
+	docker push $(REGISTRY_NAME):$(IMAGE_TAG)
 
 clean:
 	-rm -rf bin

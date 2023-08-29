@@ -1,14 +1,22 @@
 # COSI Driver Nutanix
 Nutanix COSI Driver provides reference implementation for Container Object Storage Interface (COSI) API for Nutanix Object Store
 
-## Install CRDs
+## Deploying COSI Driver
+
+### Using Helm
+Checkout the detailed helm chart documentation in [charts directory]("/charts/README.md") for installing COSI driver using helm.
+
+### Manual Deployment
+
+#### Install CRDs
 ```sh
 $ git clone github.com/kubernetes-sigs/container-object-storage-interface-api
 $ cd container-object-storage-interface-api
 $ git checkout 2504944fc33162a34a8a95d6f935cf35c4d08762
 $ kubectl create -k .
 ```
-## Install COSI controller
+
+#### Install COSI controller
 ```sh
 $ git clone github.com/kubernetes-sigs/container-object-storage-interface-controller
 $ cd container-object-storage-interface-controller
@@ -16,32 +24,51 @@ $ git checkout 5240fb3aceded346058bdae116e39fabac8897aa
 $ kubectl create -k .
 ```
 
-Following pods will execute in the default namespace :
+Following pods will execute in the default namespace:
 ```sh
 NAME                                        READY   STATUS    RESTARTS   AGE
 objectstorage-controller-6fc5f89444-4ws72   1/1     Running   0          2d6h
 ```
 
-## Building, Installing, Setting Up
-Code can be compiled using:
-```sh
-$ cd k8s-ntnx-object-cosi
-$ make build
-```
-### Update the following credentials in project/resources/secret.yaml 
+#### Install object storage provisioner sidecar with the Nutanix cosi driver
 
+```sh
+$ git clone https://github.com/nutanix-cloud-native/cosi-driver-nutanix
+$ cd cosi-driver-nutanix
+```
+
+**Update the following credentials in project/resources/secret.yaml:**
 - `ENDPOINT` : Nutanix Object Store Endpoint
 - `ACCESS_KEY` : Nutanix Object Store Access Key
 - `SECRET_KEY` : Nutanix Object Store Secret Key
 - `PC_SECRET` : Prism Central Credentials in the form 'prism-ip:prism-port:username:password'
 - `ACCOUNT_NAME` (Optional) : DisplayName identifier prefix for Nutanix Object Store (Default_Prefix: ntnx-cosi-iam-user)
 
-Build docker image and provide tag as `ntnx/ntnx-cosi-driver:latest`
-```sh
-$ make container
-$ docker tag ntnx-cosi-driver:latest ntnx/ntnx-cosi-driver:latest
-```
-Now start the sidecar and cosi driver with:
+**Pre-requisites:**
+Already deployed Nutanix object-store
+
+**Steps on how to get the above details:**
+1. Open Prism Central UI in any browser and go the objects page. Below I already have a object store called `cosi` deployed ready for use. On the right side of the object store, you will see the objects Public IPs which you can use as the endpoint and update it in the secret.yaml file in the format: `http:<objects public ip>:80`. 
+<img width="1512" alt="Screenshot 2023-08-10 at 4 31 41 PM" src="https://github.com/nutanix-core/k8s-juno/assets/44068648/121ae44f-cb63-452a-a772-cca5ff428cf4">
+
+2. On the side navigation bar click the `Access Keys` tab and then click on `Add People`.
+<img width="1510" alt="Screenshot 2023-08-10 at 4 41 41 PM" src="https://github.com/nutanix-core/k8s-juno/assets/44068648/a293b529-e9c1-495c-9f96-51f2c4fdf92c">
+
+3. Add a new email address and name and click `Next`.
+<img width="502" alt="Screenshot 2023-08-10 at 4 42 41 PM" src="https://github.com/nutanix-core/k8s-juno/assets/44068648/72494b72-efe9-42c3-8f3c-40f9563aa041">
+
+4. Now click the `Generate Keys` button.
+<img width="496" alt="Screenshot 2023-08-10 at 4 43 00 PM" src="https://github.com/nutanix-core/k8s-juno/assets/44068648/ed099ee3-cd9d-4025-8052-ddb6ac83eae0">
+
+5. After the keys are generated download the generated keys.
+<img width="494" alt="Screenshot 2023-08-10 at 4 43 16 PM" src="https://github.com/nutanix-core/k8s-juno/assets/44068648/876e3f6d-7faa-4106-88a5-9117ba2424f1">
+
+6. Now, in the `Access Key` tab you will be able to see the person you just added.
+<img width="1512" alt="Screenshot 2023-08-10 at 4 43 52 PM" src="https://github.com/nutanix-core/k8s-juno/assets/44068648/33e1a29a-a6bd-41e5-8bfa-2eb6aafb1e4b">
+
+7. The keys file that you downloaded will be a text file which will contain the `Access Key` and `Secret Key` that you need to update in the above secret.yaml file.
+
+After updating the above file, execute these commands: 
 ```sh
 $ kubectl apply -k project/.
 $ kubectl -n ntnx-system get pods
@@ -49,7 +76,9 @@ NAME                                         READY   STATUS    RESTARTS   AGE
 objectstorage-provisioner-6c8df56cc6-lqr26   2/2     Running   0          26h
 ```
 
-## Create Bucket Claim 
+## Quickstart
+
+### Create Bucket Claim 
 ```sh
 $ kubectl create -f project/examples/bucketclass.yaml
 $ kubectl create -f project/examples/bucketclaim.yaml
@@ -60,7 +89,8 @@ $ kubectl get bucket
 NAME                                                      AGE
 sample-bucketclass-ed073779-329e-4aff-b7f8-f5bdd54e06d5   7s
 ```
-## Grant Bucket Access
+
+### Grant Bucket Access
 ```sh
 $ kubectl create -f project/examples/bucketaccessclass.yaml
 $ kubectl create -f project/examples/bucketaccess.yaml
@@ -70,7 +100,7 @@ sample-bucketaccess                   5s
 ```
 A new Nutanix Object Store user (userName of the format <account-name>_ba-<bucketaccess-UUID>) is created using PC credentials (`secret.yaml`) and the newly created bucket is shared with this new user
 
-## Consuming the bucket in an app
+### Consuming the bucket in an app
 In the app, `bucketaccess` can be consumed as a volume mount. A secret is created with the name provided in the bucketaccess spec field `credentialsSecretName` which can be mounted onto to the pod:
 ```sh
 $ kubectl get secret
@@ -101,18 +131,18 @@ root@awscli:/aws# sh test.sh
 Credentials are available at `/data/cosi/credentials`
 in the awscli pod
 
-## Deletion of newly created user
+### Deletion of newly created user
 ```
 $ kubectl delete bucketaccess sample-bucketaccess
 ```
 
-## Deletion of newly created bucket
+### Deletion of newly created bucket
 ```
 $ kubectl delete bucketclaim sample-bucketclaim
 ```
 
 ## Updating the Nutanix Object Store config
-Update the `objectstorage-provisioner` secret that is used by the provisioner deployment with the new config
+Update the `objectstorage-provisioner` secret that is used by the running provisioner deployment with the new config
 ```
   # Nutanix Object Store instance endpoint, eg. "http://10.51.142.82:80"
   ENDPOINT: "http://10.51.155.148:80"
@@ -141,3 +171,19 @@ $ kubectl -n ntnx-system get pods
 NAME                                         READY   STATUS    RESTARTS   AGE
 objectstorage-provisioner-5f3we89tt2-tfy357   2/2     Running   0          2s
 ```
+
+## Building Nutanix cosi driver container image
+Code can be compiled using:
+```sh
+$ git clone https://github.com/nutanix-cloud-native/cosi-driver-nutanix
+$ cd cosi-driver-nutanix
+$ make build
+```
+
+Build and push docker image and for your custom resistry name and image tag 
+```sh
+$ make REGISTRY_NAME=SampleRegistryUsername/cosi-driver-nutanix IMAGE_TAG=latest container
+$ make REGISTRY_NAME=SampleRegistryUsername/cosi-driver-nutanix IMAGE_TAG=latest docker-push
+```
+
+Your custom image `SampleRegistry/cosi-driver-nutanix:latest` is now ready to be used.
