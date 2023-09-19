@@ -21,8 +21,8 @@ secret:
   secret_key: ""
   # PC Credentials.
   pc_ip: ""
-  pc_port: ""
-  pc_username: ""
+  pc_port: "9440"
+  pc_username: "admin"
   pc_password: ""
   # Account Name is a displayName identifier Prefix for Nutanix.
   # Objects to ensure that multiple requests for the same account
