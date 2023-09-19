@@ -2,9 +2,9 @@ apiVersion: v2
 name: cosi-driver-nutanix
 description: A Helm chart to deploy Nutanix COSI driver
 type: application
-version: 0.0.3
+version: 0.0.4
 
-appVersion: "v0.0.3"
+appVersion: "v0.0.4"
 
 icon: https://www.nutanix.com/content/dam/nutanix/global/icons/products/svg/Nutanix-Objects-40.svg
 annotations:
