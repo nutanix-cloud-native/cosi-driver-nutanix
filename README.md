@@ -4,7 +4,7 @@ Nutanix COSI Driver provides reference implementation for Container Object Stora
 ## Deploying COSI Driver
 
 ### Using Helm
-Checkout the detailed helm chart documentation in [charts directory]("/charts/README.md") for installing COSI driver using helm.
+Checkout the detailed helm chart documentation in [charts directory](/charts/README.md) for installing COSI driver using helm.
 
 ### Manual Deployment
 
