@@ -9,7 +9,7 @@ require (
 	github.com/spf13/viper v1.17.0
 	google.golang.org/grpc v1.59.0
 	k8s.io/apimachinery v0.24.2
-	k8s.io/klog/v2 v2.80.1
+	k8s.io/klog/v2 v2.110.1
 	sigs.k8s.io/container-object-storage-interface-provisioner-sidecar v0.1.1-0.20230130215648-c0cf9951ffc6
 	sigs.k8s.io/container-object-storage-interface-spec v0.1.1-0.20221006174327-ec782953b8ac
 
@@ -17,7 +17,7 @@ require (
 
 require (
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
-	github.com/go-logr/logr v1.2.0 // indirect
+	github.com/go-logr/logr v1.3.0 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
