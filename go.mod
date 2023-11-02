@@ -8,7 +8,7 @@ require (
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.17.0
 	google.golang.org/grpc v1.59.0
-	k8s.io/apimachinery v0.24.2
+	k8s.io/apimachinery v0.28.3
 	k8s.io/klog/v2 v2.110.1
 	sigs.k8s.io/container-object-storage-interface-provisioner-sidecar v0.1.1-0.20230130215648-c0cf9951ffc6
 	sigs.k8s.io/container-object-storage-interface-spec v0.1.1-0.20221006174327-ec782953b8ac
@@ -24,6 +24,7 @@ require (
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
+	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
 	github.com/pelletier/go-toml/v2 v2.1.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/sagikazarmark/locafero v0.3.0 // indirect
@@ -42,5 +43,5 @@ require (
 	google.golang.org/protobuf v1.31.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	sigs.k8s.io/json v0.0.0-20211208200746-9f7c6b3444d2 // indirect
+	sigs.k8s.io/json v0.0.0-20221116044647-bc3834ca7abd // indirect
 )
