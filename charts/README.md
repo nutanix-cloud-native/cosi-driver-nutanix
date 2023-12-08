@@ -89,22 +89,22 @@ Install the driver in the `cosi-driver-nutanix` namespace (add the `--create-nam
 
 ### Steps to update the Nutanix Object store details while installing COSI:
 1. Open Prism Central UI in any browser and go the objects page. In the below screenshot, already an object store called `cosi` is deployed which is ready for use. On the right side of the object store, you will see the objects Public IPs which you can use as the endpoint in the format: `http:<objects public ip>:80`.
-<img width="1512" alt="Screenshot 2023-08-10 at 4 31 41 PM" src="https://github.com/nutanix-core/k8s-juno/assets/44068648/121ae44f-cb63-452a-a772-cca5ff428cf4">
+<img width="1512" alt="Screenshot 2023-08-10 at 4 31 41 PM" src="https://github.com/nutanix-cloud-native/cosi-driver-nutanix/assets/44068648/ee0d9ef9-5c5a-4a5a-a0c0-ef2d76db118c">
 
 2. On the side navigation bar click the `Access Keys` tab and then click on `Add People`.
-<img width="1510" alt="Screenshot 2023-08-10 at 4 41 41 PM" src="https://github.com/nutanix-core/k8s-juno/assets/44068648/a293b529-e9c1-495c-9f96-51f2c4fdf92c">
+<img width="1510" alt="Screenshot 2023-08-10 at 4 41 41 PM" src="https://github.com/nutanix-cloud-native/cosi-driver-nutanix/assets/44068648/646788d8-d4c4-49fb-abfe-b20c14e8bd7f">
 
 3. Add a new email address and name and click `Next`.
-<img width="502" alt="Screenshot 2023-08-10 at 4 42 41 PM" src="https://github.com/nutanix-core/k8s-juno/assets/44068648/72494b72-efe9-42c3-8f3c-40f9563aa041">
+<img width="502" alt="Screenshot 2023-08-10 at 4 42 41 PM" src="https://github.com/nutanix-cloud-native/cosi-driver-nutanix/assets/44068648/7b12652d-26b4-49d2-92f1-cdddc658d1da">
 
 4. Now click the `Generate Keys` button.
-<img width="496" alt="Screenshot 2023-08-10 at 4 43 00 PM" src="https://github.com/nutanix-core/k8s-juno/assets/44068648/ed099ee3-cd9d-4025-8052-ddb6ac83eae0">
+<img width="496" alt="Screenshot 2023-08-10 at 4 43 00 PM" src="https://github.com/nutanix-cloud-native/cosi-driver-nutanix/assets/44068648/fed3a458-900e-4e3e-9112-af8f3c23b00c">
 
 5. After the keys are generated download the generated keys.
-<img width="494" alt="Screenshot 2023-08-10 at 4 43 16 PM" src="https://github.com/nutanix-core/k8s-juno/assets/44068648/876e3f6d-7faa-4106-88a5-9117ba2424f1">
+<img width="494" alt="Screenshot 2023-08-10 at 4 43 16 PM" src="https://github.com/nutanix-cloud-native/cosi-driver-nutanix/assets/44068648/09598ff9-e696-45bb-9bb4-b517f3822c71">
 
 6. Now, in the `Access Key` tab you will be able to see the person you just added.
-<img width="1512" alt="Screenshot 2023-08-10 at 4 43 52 PM" src="https://github.com/nutanix-core/k8s-juno/assets/44068648/33e1a29a-a6bd-41e5-8bfa-2eb6aafb1e4b">
+<img width="1512" alt="Screenshot 2023-08-10 at 4 43 52 PM" src="https://github.com/nutanix-cloud-native/cosi-driver-nutanix/assets/44068648/d333cd1c-f59c-4e4b-845d-a7ec950a82c3">
 
 7. The keys file that you downloaded will be a text file which will contain the `Access Key` and `Secret Key` that you need to update in helm values.
 
