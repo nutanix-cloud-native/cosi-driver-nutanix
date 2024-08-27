@@ -6,7 +6,7 @@ spec:
   containers:
     - name: awscli
       # TODO: Replace the image with an official one once Amazon publishes theirs
-      image: pknutanix/aws-cli:1.16.220
+      image: pknutanix/aws-cli:latest
       stdin: true
       tty: true
       volumeMounts:
