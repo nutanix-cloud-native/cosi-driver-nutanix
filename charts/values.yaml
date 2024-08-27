@@ -19,11 +19,13 @@ secret:
   access_key: ""
   # Admin IAM Secret key to be used for Nutanix Objects.
   secret_key: ""
-  # PC Credentials.
+  # PC Credentials. If using Triton, enter iam-mock IP and Port
   pc_ip: ""
   pc_port: "9440"
   pc_username: "admin"
   pc_password: ""
+  # Use Triton as Object Store, eg. true
+  is_triton: "false"
   # Account Name is a displayName identifier Prefix for Nutanix.
   # Objects to ensure that multiple requests for the same account
   # result in only one access token being created.

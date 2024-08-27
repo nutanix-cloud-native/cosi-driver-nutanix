@@ -31,12 +31,13 @@ type API struct {
 	PCEndpoint  string
 	PCUsername  string
 	PCPassword  string
+	IsTriton    string
 	AccountName string
 	HTTPClient  HTTPClient
 }
 
 // New returns client for Nutanix object store
-func New(endpoint, accessKey, secretKey, pcEndpoint, pcUsername, pcPassword, accountName string, httpClient HTTPClient) (*API, error) {
+func New(endpoint, accessKey, secretKey, pcEndpoint, pcUsername, pcPassword, isTriton string, accountName string, httpClient HTTPClient) (*API, error) {
 	// validate endpoint
 	if endpoint == "" {
 		return nil, errNoEndpoint
@@ -67,6 +68,10 @@ func New(endpoint, accessKey, secretKey, pcEndpoint, pcUsername, pcPassword, acc
 		return nil, errNoPCPassword
 	}
 
+	if isTriton == "" {
+		isTriton = "false"
+	}
+
 	// set default account_name when empty
 	if accountName == "" {
 		accountName = "ntnx-cosi-iam-user"
@@ -88,12 +93,13 @@ func New(endpoint, accessKey, secretKey, pcEndpoint, pcUsername, pcPassword, acc
 		PCEndpoint:  pcEndpoint,
 		PCUsername:  pcUsername,
 		PCPassword:  pcPassword,
+		IsTriton:    isTriton,
 		AccountName: accountName,
 		HTTPClient:  httpClient,
 	}, nil
 }
 
-func GetCredsFromPCSecret(key string) (string, string, string, error) {
+func GetCredsFromPCSecret(key string, isTriton string) (string, string, string, error) {
 
 	// Split using ":" as delimiter
 	creds := strings.SplitN(string(key), ":", 4)
@@ -106,7 +112,10 @@ func GetCredsFromPCSecret(key string) (string, string, string, error) {
 	if err != nil {
 		return "", "", "", err
 	}
-
+	
+	if isTriton == "true" {
+		return "http://" + creds[0] + ":" + creds[1], creds[2], creds[3], nil
+	}
 	return "https://" + creds[0] + ":" + creds[1], creds[2], creds[3], nil
 }
 

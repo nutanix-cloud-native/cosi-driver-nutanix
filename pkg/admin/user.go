@@ -12,10 +12,12 @@ import (
 )
 
 const (
-	marshalError   = "failed to marshal ntnx http request body"
-	unmarshalError = "failed to unmarshal ntnx http response"
-	createEndpoint = "/oss/iam_proxy/buckets_access_keys"
-	deleteEndpoint = "/oss/iam_proxy/users/"
+	marshalError         = "failed to marshal ntnx http request body"
+	unmarshalError       = "failed to unmarshal ntnx http response"
+	createEndpoint       = "/oss/iam_proxy/buckets_access_keys"
+	deleteEndpoint       = "/oss/iam_proxy/users/"
+	tritonCreateEndpoint = "/api/iam/authn/v1/buckets_access_keys"
+	tritonDeleteEndpoint = "/api/iam/authn/v1/users/"
 )
 
 var (
@@ -69,6 +71,10 @@ func (api *API) CreateUser(ctx context.Context, username, display_name string) (
 
 	// Create API
 	url := api.PCEndpoint + createEndpoint
+	
+	if api.IsTriton == "true" {
+		url = api.PCEndpoint + tritonCreateEndpoint
+	}
 
 	// Request Body
 	info := &NtnxUserReq{
@@ -142,6 +148,11 @@ func (api *API) RemoveUser(ctx context.Context, uuid string) error {
 
 	// Delete API
 	delete_url := api.PCEndpoint + deleteEndpoint + string(uuid)
+
+	if api.IsTriton == "true" {
+		delete_url = api.PCEndpoint + tritonDeleteEndpoint + string(uuid)
+	}
+
 	delete_request, err := http.NewRequest("DELETE", delete_url, nil)
 	if err != nil {
 		return fmt.Errorf("%w", err)
