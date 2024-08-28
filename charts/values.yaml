@@ -5,9 +5,9 @@ fullnameOverride: ""
 # cosi-driver-nutanix sidecar image.
 image:
   registry: ghcr.io
-  repository: nutanixcloudnative/cosi-driver-nutanix
+  repository: nutanix-cloud-native/cosi-driver-nutanix
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "latest"
+  tag: ""
   pullPolicy: IfNotPresent
 
 # Secret used by the cosi-driver-nutanix sidecar for objects management.
