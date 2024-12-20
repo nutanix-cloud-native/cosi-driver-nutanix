@@ -120,16 +120,26 @@ spec:
       secretName: bucketcreds
 ```
 An example awscli pod can be found at `project/examples/awscliapppod.yaml`
-
+This Pod will list the buckets and then writes a test file to the new bucket.
 ```
 $ kubectl create -f project/examples/awscliapppod.yaml
-$ kubectl exec -it awscli bash
-root@awscli:/aws# sh test.sh
+$ kubectl logs awscli
+Defaulted container "awscli" out of: awscli, write-aws-credentials (init), write-test-file (init)
++ aws s3 ls
+2024-12-20 19:38:40 sample-bucketclassc949a8c0-4c73-46ea-ace8-20071bff8102
+++ cat /tmp/test-directory/file.txt
++ readonly BUCKET_NAME=sample-bucketclassc949a8c0-4c73-46ea-ace8-20071bff8102
++ BUCKET_NAME=sample-bucketclassc949a8c0-4c73-46ea-ace8-20071bff8102
+++ date +%Y%m%d_%H%M%S
++ readonly FILE_NAME=20241220_213034.txt
++ FILE_NAME=20241220_213034.txt
++ aws s3 cp /tmp/test-directory/file.txt s3://sample-bucketclassc949a8c0-4c73-46ea-ace8-20071bff8102/20241220_213034.txt
+upload: ../tmp/test-directory/file.txt to s3://sample-bucketclassc949a8c0-4c73-46ea-ace8-20071bff8102/20241220_213034.txt
++ aws s3 cp s3://sample-bucketclassc949a8c0-4c73-46ea-ace8-20071bff8102/20241220_213034.txt -
+sample-bucketclassc949a8c0-4c73-46ea-ace8-20071bff8102
 ```
-`test.sh` is a sample test script in awscli pod which will do a list-buckets and put-object operation using credentials of newly created user.
 
-Credentials are available at `/data/cosi/credentials`
-in the awscli pod
+Credentials are available at `/data/cosi/BucketInfo` in the awscli Pod.
 
 ### Deletion of newly created user
 ```
