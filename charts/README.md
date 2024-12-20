@@ -39,33 +39,34 @@ To know more about the various flag options used with upgrade command check out 
 
 The following table lists the configurable parameters of the cosi-driver-nutanix chart and their default values.
 
-| Parameter                                          | Description                                                        | Default                                                                      |
-|----------------------------------------------------|--------------------------------------------------------------------|------------------------------------------------------------------------------|
-| `nameOverride`                                     | To override the name of the cosi-driver chart                      | `""`                                                                         |
-| `fullnameOverride`                                 | To override the full name of the cosi-driver chart                 | `""`                                                                         |
-| `image.registry`                                   | Image registry for cosi-driver-nutanix sidecar                     | `ghcr.io/`                                                                   |
-| `image.repository`                                 | Image repository for cosi-driver-nutanix sidecar                   | `nutanix-cloud-native/cosi-driver-nutanix`                                   |
-| `image.tag`                                        | Image tag for cosi-driver-nutanix sidecar                          | `""`                                                                         |
-| `image.pullPolicy`                                 | Image registry for cosi-driver-nutanix sidecar                     | `IfNotPresent`                                                               |
-| `secret.enabled`                                   | Enables K8s secret deployment for Nutanix Object Store             | `true`                                                                       |
-| `secret.endpoint`                                  | Nutanix Object Store instance endpoint                             | `""`                                                                         |
-| `secret.access_key`                                | Admin IAM Access key to be used for Nutanix Objects                | `""`                                                                         |
-| `secret.secret_key`                                | Admin IAM Secret key to be used for Nutanix Objects                | `""`                                                                         |
-| `secret.pc_ip`                                     | PC ip                 | `""`                                       |
-| `secret.pc_port`                                   | PC port               | `""`                                       |
-| `secret.pc_username`                               | PC username           | `""`                                       |
-| `secret.pc_password`                               | PC password           | `""`                                       |
-| `secret.account_name`                              | Account Name is a displayName identifier Prefix for Nutanix        | `"ntnx-cosi-iam-user"`                                                       |
-| `cosiController.logLevel`                          | Verbosity of logs for COSI central controller deployment           | `5`                                                                          |
-| `cosiController.image.registery`                   | Image registry for COSI central controller deployment              | `gcr.io/`                                                                    |
-| `cosiController.image.repository`                  | Image repository for COSI central controller deployment            | `k8s-staging-sig-storage/objectstorage-controller`                           |
-| `cosiController.image.tag`                         | Image tag for COSI central controller deployment                   | `v20221027-v0.1.1-8-g300019f`                                                |
-| `cosiController.image.pullPolicy`                  | Image pull policy for COSI central controller deployment           | `Always`                                                                     |
-| `objectstorageProvisionerSidecar.logLevel`         | Verbosity of logs for COSI sidecar                                 | `5`                                                                          |
-| `objectstorageProvisionerSidecar.image.registery`  | Image registry for COSI sidecar                                    | `gcr.io/`                                                                    |
-| `objectstorageProvisionerSidecar.image.repository` | Image repository for COSI sidecar                                  | `k8s-staging-sig-storage/objectstorage-sidecar/objectstorage-sidecar@sha256` |
-| `objectstorageProvisionerSidecar.image.tag`        | Image tag for COSI sidecar                                         | `589c0ad4ef5d0855fe487440e634d01315bc3d883f91c44cb72577ea6e12c890`           |
-| `objectstorageProvisionerSidecar.image.pullPolicy` | Image pull policy for COSI sidecar                                 | `Always`                                                                     |
+| Parameter                                          | Description                                                                | Default                                                                      |
+|----------------------------------------------------|----------------------------------------------------------------------------|------------------------------------------------------------------------------|
+| `nameOverride`                                     | To override the name of the cosi-driver chart                              | `""`                                                                         |
+| `fullnameOverride`                                 | To override the full name of the cosi-driver chart                         | `""`                                                                         |
+| `image.registry`                                   | Image registry for cosi-driver-nutanix sidecar                             | `ghcr.io/`                                                                   |
+| `image.repository`                                 | Image repository for cosi-driver-nutanix sidecar                           | `nutanix-cloud-native/cosi-driver-nutanix`                                   |
+| `image.tag`                                        | Image tag for cosi-driver-nutanix sidecar                                  | `""`                                                                         |
+| `image.pullPolicy`                                 | Image registry for cosi-driver-nutanix sidecar                             | `IfNotPresent`                                                               |
+| `secret.enabled`                                   | Enables K8s secret deployment for Nutanix Object Store                     | `true`                                                                       |
+| `secret.endpoint`                                  | Nutanix Object Store instance endpoint                                     | `""`                                                                         |
+| `secret.access_key`                                | Admin IAM Access key to be used for Nutanix Objects                        | `""`                                                                         |
+| `secret.secret_key`                                | Admin IAM Secret key to be used for Nutanix Objects                        | `""`                                                                         |
+| `secret.pc_ip`                                     | PC ip                                                                      | `""`                                                                         |
+| `secret.pc_port`                                   | PC port                                                                    | `""`                                                                         |
+| `secret.pc_username`                               | PC username                                                                | `""`                                                                         |
+| `secret.pc_password`                               | PC password                                                                | `""`                                                                         |
+| `secret.account_name`                              | Account Name is a displayName identifier Prefix for Nutanix                | `"ntnx-cosi-iam-user"`                                                       |
+| `cosiController.create`                            | Whether to create the COSI central controller deployment and its resources | `true`                                                                       |
+| `cosiController.logLevel`                          | Verbosity of logs for COSI central controller deployment                   | `5`                                                                          |
+| `cosiController.image.registery`                   | Image registry for COSI central controller deployment                      | `gcr.io/`                                                                    |
+| `cosiController.image.repository`                  | Image repository for COSI central controller deployment                    | `k8s-staging-sig-storage/objectstorage-controller`                           |
+| `cosiController.image.tag`                         | Image tag for COSI central controller deployment                           | `v20221027-v0.1.1-8-g300019f`                                                |
+| `cosiController.image.pullPolicy`                  | Image pull policy for COSI central controller deployment                   | `Always`                                                                     |
+| `objectstorageProvisionerSidecar.logLevel`         | Verbosity of logs for COSI sidecar                                         | `5`                                                                          |
+| `objectstorageProvisionerSidecar.image.registery`  | Image registry for COSI sidecar                                            | `gcr.io/`                                                                    |
+| `objectstorageProvisionerSidecar.image.repository` | Image repository for COSI sidecar                                          | `k8s-staging-sig-storage/objectstorage-sidecar/objectstorage-sidecar@sha256` |
+| `objectstorageProvisionerSidecar.image.tag`        | Image tag for COSI sidecar                                                 | `589c0ad4ef5d0855fe487440e634d01315bc3d883f91c44cb72577ea6e12c890`           |
+| `objectstorageProvisionerSidecar.image.pullPolicy` | Image pull policy for COSI sidecar                                         | `Always`                                                                     |
 
 ### Configuration examples:
 
