@@ -121,7 +121,7 @@ spec:
 ```
 An example awscli pod can be found at `project/examples/awscliapppod.yaml`
 This Pod will list the buckets and then writes a test file to the new bucket.
-```
+```sh
 $ kubectl create -f project/examples/awscliapppod.yaml
 $ kubectl logs awscli
 Defaulted container "awscli" out of: awscli, write-aws-credentials (init), write-test-file (init)
