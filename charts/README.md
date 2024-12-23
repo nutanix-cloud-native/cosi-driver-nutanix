@@ -56,7 +56,7 @@ The following table lists the configurable parameters of the cosi-driver-nutanix
 | `secret.pc_username`                               | PC username                                                                | `""`                                                                         |
 | `secret.pc_password`                               | PC password                                                                | `""`                                                                         |
 | `secret.account_name`                              | Account Name is a displayName identifier Prefix for Nutanix                | `"ntnx-cosi-iam-user"`                                                       |
-| `cosiController.create`                            | Whether to create the COSI central controller deployment and its resources | `true`                                                                       |
+| `cosiController.enabled`                           | Whether to create the COSI central controller deployment and its resources | `true`                                                                       |
 | `cosiController.logLevel`                          | Verbosity of logs for COSI central controller deployment                   | `5`                                                                          |
 | `cosiController.image.registery`                   | Image registry for COSI central controller deployment                      | `gcr.io/`                                                                    |
 | `cosiController.image.repository`                  | Image repository for COSI central controller deployment                    | `k8s-staging-sig-storage/objectstorage-controller`                           |

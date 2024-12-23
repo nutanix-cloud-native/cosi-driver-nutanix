@@ -32,7 +32,7 @@ secret:
 
 # COSI central controller specifications.
 cosiController:
-  create: true
+  enabled: true
   logLevel: 5
   image:
     registry: gcr.io
