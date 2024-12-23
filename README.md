@@ -142,13 +142,15 @@ sample-bucketclassc949a8c0-4c73-46ea-ace8-20071bff8102
 Credentials are available at `/data/cosi/BucketInfo` in the awscli Pod.
 
 ### Deletion of newly created user
-```
+```sh
 $ kubectl delete bucketaccess sample-bucketaccess
+$ kubectl delete bucketaccessclass sample-bucketaccessclass
 ```
 
 ### Deletion of newly created bucket
-```
+```sh
 $ kubectl delete bucketclaim sample-bucketclaim
+$ kubectl delete bucketclass sample-bucketclass
 ```
 
 ## Updating the Nutanix Object Store config
