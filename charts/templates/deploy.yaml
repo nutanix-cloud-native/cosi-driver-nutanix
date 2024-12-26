@@ -5,7 +5,7 @@ metadata:
 {{ include "cosi-driver-nutanix.resource.annotations" . | indent 4 }}
   labels:
 {{ include "cosi-driver-nutanix.resource.labels" . | indent 4 }}
-  name: objectstorage-provisioner
+  name: {{ include "cosi-driver-nutanix.name" . }}
   namespace: {{ .Release.Namespace }}
 spec:
   minReadySeconds: 30
@@ -28,32 +28,33 @@ spec:
 {{ include "cosi-driver-nutanix.resource.labels" . | indent 8 }}
     spec:
       containers:
-      - envFrom:
-        - secretRef:
-            name: objectstorage-provisioner
+      - name: cosi-driver-nutanix
         image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
-        name: cosi-driver-nutanix
+        envFrom:
+          - secretRef:
+              name: {{ include "cosi-driver-nutanix.name" . }}
         volumeMounts:
         - mountPath: /var/lib/cosi
           name: socket
-      - name: objectstorage-provisioner-sidecar
+      - name: objectstorage-sidecar
         image: "{{ .Values.objectstorageProvisionerSidecar.image.registry }}/{{ .Values.objectstorageProvisionerSidecar.image.repository }}:{{ .Values.objectstorageProvisionerSidecar.image.tag }}"
         imagePullPolicy: {{ .Values.objectstorageProvisionerSidecar.image.pullPolicy }}
         args:
           - "--v={{ .Values.objectstorageProvisionerSidecar.logLevel }}"
         envFrom:
           - secretRef:
-              name: objectstorage-provisioner
+              name: {{ include "cosi-driver-nutanix.name" . }}
         env:
           - name: POD_NAMESPACE
             valueFrom:
               fieldRef:
-                fieldPath: metadata.namespace
+                fieldPath:
+                  metadata.namespace
         volumeMounts:
           - mountPath: /var/lib/cosi
             name: socket
-      serviceAccountName: objectstorage-provisioner-sa
+      serviceAccountName: {{ include "cosi-driver-nutanix.name" . }}
       volumes:
       - emptyDir: {}
         name: socket
