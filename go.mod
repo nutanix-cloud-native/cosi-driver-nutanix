@@ -1,6 +1,7 @@
 module github.com/nutanix-core/k8s-ntnx-object-cosi
 
 go 1.22.10
+toolchain go1.23.4
 
 require (
 	github.com/aws/aws-sdk-go v1.55.5
@@ -8,7 +9,7 @@ require (
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.19.0
 	google.golang.org/grpc v1.69.2
-	k8s.io/apimachinery v0.31.4
+	k8s.io/apimachinery v0.32.0
 	k8s.io/klog/v2 v2.130.1
 	sigs.k8s.io/container-object-storage-interface-provisioner-sidecar v0.1.1-0.20230130215648-c0cf9951ffc6
 	sigs.k8s.io/container-object-storage-interface-spec v0.1.1-0.20221006174327-ec782953b8ac
@@ -43,5 +44,5 @@ require (
 	google.golang.org/protobuf v1.35.1 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	sigs.k8s.io/json v0.0.0-20221116044647-bc3834ca7abd // indirect
+	sigs.k8s.io/json v0.0.0-20241010143419-9aa6b5e7a4b3 // indirect
 )
