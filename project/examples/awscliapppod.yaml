@@ -3,16 +3,88 @@ kind: Pod
 metadata:
   name: awscli
 spec:
+  restartPolicy: OnFailure
+  initContainers:
+    - name: write-aws-credentials
+      image: ghcr.io/itchyny/gojq:0.12.17
+      command:
+        - "sh"
+        - "-o"
+        - "xtrace" # Verbose output
+        - "-o"
+        - "errexit" # Exit on any error, except in a pipeline
+        - "-c"
+        - |
+          mkdir -p ~/.aws
+          # Write the AWS credentials to ~/.aws/credentials
+          /gojq -r '
+          . |
+          "[default]\n" +
+          "aws_access_key_id = " + .spec.secretS3.accessKeyID + "\n" +
+          "aws_secret_access_key = " + .spec.secretS3.accessSecretKey + "\n"
+          ' /data/cosi/BucketInfo > ~/.aws/credentials
+          
+          # Write the AWS config to ~/.aws/config
+          /gojq -r '
+          . |
+          "[default]\n" +
+          "endpoint_url = " + .spec.secretS3.endpoint + "\n" +
+          "region = " + .spec.secretS3.region + "\n"
+          ' /data/cosi/BucketInfo > ~/.aws/config
+      volumeMounts:
+        - name: cosi-secret
+          mountPath: /data/cosi
+        - name: aws-credentials
+          mountPath: /root/.aws/
+    - name: write-test-file
+      image: ghcr.io/itchyny/gojq:0.12.17
+      command:
+        - "sh"
+        - "-o"
+        - "xtrace" # Verbose output
+        - "-o"
+        - "errexit" # Exit on any error, except in a pipeline
+        - "-c"
+        - |
+          # Create a test file with the bucket name written to it
+          touch "/tmp/test-directory/file.txt"
+          /gojq -r .spec.bucketName /data/cosi/BucketInfo > "/tmp/test-directory/file.txt"
+      volumeMounts:
+        - name: cosi-secret
+          mountPath: /data/cosi
+        - name: test-directory
+          mountPath: /tmp/test-directory
   containers:
     - name: awscli
-      # TODO: Replace the image with an official one once Amazon publishes theirs
-      image: pknutanix/aws-cli:latest
-      stdin: true
-      tty: true
+      image: amazon/aws-cli:2.22.21
+      command:
+        - "sh"
+        - "-o"
+        - "xtrace" # Verbose output
+        - "-o"
+        - "errexit" # Exit on any error, except in a pipeline
+        - "-c"
+        - |
+          # List all buckets
+          aws s3 ls
+         
+          # Copy a file to the bucket
+          readonly BUCKET_NAME=$(cat /tmp/test-directory/file.txt)
+          readonly FILE_NAME="$(date +%Y%m%d_%H%M%S).txt"
+          aws s3 cp /tmp/test-directory/file.txt s3://$BUCKET_NAME/$FILE_NAME
+
+          # Copy the file back from S3 to the terminal
+          aws s3 cp s3://$BUCKET_NAME/$FILE_NAME -
       volumeMounts:
-        - name: cosi-secrets
-          mountPath: /data/cosi
+        - name: aws-credentials
+          mountPath: /root/.aws/
+        - name: test-directory
+          mountPath: /tmp/test-directory
   volumes:
-  - name: cosi-secrets
+  - name: cosi-secret
     secret:
       secretName: bucketcreds
+  - name: aws-credentials
+    emptyDir: {}
+  - name: test-directory
+    emptyDir: {}
