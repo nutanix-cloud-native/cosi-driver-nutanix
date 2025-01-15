@@ -1,6 +1,7 @@
 module github.com/nutanix-core/k8s-ntnx-object-cosi
 
-go 1.22.10
+go 1.23.0
+
 toolchain go1.23.4
 
 require (
