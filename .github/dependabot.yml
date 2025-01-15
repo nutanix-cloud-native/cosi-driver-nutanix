@@ -9,6 +9,7 @@ updates:
   # that Go modules respect semver, which is generally true but not guaranteed.
   # Update weekly to avoid excessive PRs.
   - package-ecosystem: "gomod"
+    directory: "/"
     schedule:
       interval: "weekly"
     groups:
