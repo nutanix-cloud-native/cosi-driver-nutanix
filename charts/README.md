@@ -60,7 +60,7 @@ The following table lists the configurable parameters of the cosi-driver-nutanix
 | `cosiController.logLevel`                          | Verbosity of logs for COSI central controller deployment                   | `5`                                                                          |
 | `cosiController.image.registery`                   | Image registry for COSI central controller deployment                      | `gcr.io/`                                                                    |
 | `cosiController.image.repository`                  | Image repository for COSI central controller deployment                    | `k8s-staging-sig-storage/objectstorage-controller`                           |
-| `cosiController.image.tag`                         | Image tag for COSI central controller deployment                           | `v20221027-v0.1.1-8-g300019f`                                                |
+| `cosiController.image.tag`                         | Image tag for COSI central controller deployment                           | `v20250110-a29e5f6`                                                |
 | `cosiController.image.pullPolicy`                  | Image pull policy for COSI central controller deployment                   | `Always`                                                                     |
 | `objectstorageProvisionerSidecar.logLevel`         | Verbosity of logs for COSI sidecar                                         | `5`                                                                          |
 | `objectstorageProvisionerSidecar.image.registery`  | Image registry for COSI sidecar                                            | `gcr.io/`                                                                    |
