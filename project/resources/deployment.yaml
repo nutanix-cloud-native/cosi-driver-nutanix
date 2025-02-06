@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: objectstorage-provisioner
+  name: cosi-driver-nutanix
   labels:
     app.kubernetes.io/part-of: container-object-storage-interface
     app.kubernetes.io/component: driver-ntnx
@@ -31,7 +31,7 @@ spec:
         app.kubernetes.io/version: main
         app.kubernetes.io/name: cosi-driver-ntnx
     spec:
-      serviceAccountName: objectstorage-provisioner-sa
+      serviceAccountName: cosi-driver-nutanix
       volumes:
       - name: socket
         emptyDir: {}
@@ -41,18 +41,18 @@ spec:
         imagePullPolicy: IfNotPresent
         envFrom:
         - secretRef:
-            name: objectstorage-provisioner
+            name: cosi-driver-nutanix
         volumeMounts:
         - mountPath: /var/lib/cosi
           name: socket
-      - name: objectstorage-provisioner-sidecar
+      - name: objectstorage-sidecar
         image: k8s-staging-sig-storage/objectstorage-sidecar/objectstorage-sidecar:v20221117-v0.1.0-22-g0e67387
         imagePullPolicy: Always
         args:
         - "--v=5"
         envFrom:
         - secretRef:
-            name: objectstorage-provisioner
+            name: cosi-driver-nutanix
         env:
         - name: POD_NAMESPACE
           valueFrom:

@@ -30,7 +30,7 @@ NAME                                        READY   STATUS    RESTARTS   AGE
 objectstorage-controller-6fc5f89444-4ws72   1/1     Running   0          2d6h
 ```
 
-#### Install object storage provisioner sidecar with the Nutanix cosi driver
+#### Install object storage provisioner sidecar with the Nutanix COSI driver
 
 ```sh
 $ git clone https://github.com/nutanix-cloud-native/cosi-driver-nutanix
@@ -72,8 +72,8 @@ After updating the above file, execute these commands:
 ```sh
 $ kubectl apply -k project/.
 $ kubectl -n ntnx-system get pods
-NAME                                         READY   STATUS    RESTARTS   AGE
-objectstorage-provisioner-6c8df56cc6-lqr26   2/2     Running   0          26h
+NAME                                        READY   STATUS    RESTARTS   AGE
+cosi-driver-nutanix-6cd467d7df-btvpp        2/2     Running   0          3m5s
 ```
 
 ## Quickstart
@@ -170,21 +170,21 @@ Update the `objectstorage-provisioner` secret that is used by the running provis
 Then restart the provisioner pod so that the new secret changes getting mounted on the new pod and will thereon be used.
 ```
 $ kubectl -n ntnx-system get pods
-NAME                                         READY   STATUS    RESTARTS   AGE
-objectstorage-provisioner-6c8df56cc6-lqr26   2/2     Running   0          26h
+NAME                                        READY   STATUS    RESTARTS   AGE
+cosi-driver-nutanix-6cd467d7df-btvpp        2/2     Running   0          3m7s
 ```
 
 ```
-$ kubectl delete pod objectstorage-provisioner-6c8df56cc6-lqr26 -n ntnx-system
+$ kubectl delete pod cosi-driver-nutanix-6cd467d7df-btvpp -n ntnx-system
 ```
 New pod comes up which will be having the updated config
 ```
 $ kubectl -n ntnx-system get pods
-NAME                                         READY   STATUS    RESTARTS   AGE
-objectstorage-provisioner-5f3we89tt2-tfy357   2/2     Running   0          2s
+NAME                                        READY   STATUS    RESTARTS   AGE
+cosi-driver-nutanix-6cd467d7df-lkfmc        2/2     Running   0          3s
 ```
 
-## Building Nutanix cosi driver container image
+## Building Nutanix COSI driver container image
 Code can be compiled using:
 ```sh
 $ git clone https://github.com/nutanix-cloud-native/cosi-driver-nutanix

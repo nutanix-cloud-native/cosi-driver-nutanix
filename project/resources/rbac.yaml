@@ -2,7 +2,7 @@
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: objectstorage-provisioner-role
+  name: cosi-driver-nutanix
   labels:
     app.kubernetes.io/part-of: container-object-storage-interface
     app.kubernetes.io/component: driver-ntnx
@@ -22,7 +22,7 @@ rules:
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: objectstorage-provisioner-role-binding
+  name: cosi-driver-nutanix
   labels:
     app.kubernetes.io/part-of: container-object-storage-interface
     app.kubernetes.io/component: driver-ntnx
@@ -30,9 +30,9 @@ metadata:
     app.kubernetes.io/name: cosi-driver-ntnx
 subjects:
   - kind: ServiceAccount
-    name: objectstorage-provisioner-sa
+    name: cosi-driver-nutanix
     namespace: default # must set to default. see https://github.com/kubernetes-sigs/kustomize/issues/1377#issuecomment-694731163
 roleRef:
   kind: ClusterRole
-  name: objectstorage-provisioner-role
+  name: cosi-driver-nutanix
   apiGroup: rbac.authorization.k8s.io
