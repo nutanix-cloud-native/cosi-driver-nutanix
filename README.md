@@ -43,6 +43,7 @@ $ cd cosi-driver-nutanix
 - `SECRET_KEY` : Nutanix Object Store Secret Key
 - `PC_SECRET` : Prism Central Credentials in the form 'prism-ip:prism-port:username:password'
 - `ACCOUNT_NAME` (Optional) : DisplayName identifier prefix for Nutanix Object Store (Default_Prefix: ntnx-cosi-iam-user)
+- `CA_CERT` (Optional) : CA Certificate to be used by the S3 Client (Default: "")
 
 **Pre-requisites:**
 Already deployed Nutanix object-store
@@ -165,6 +166,9 @@ Update the `objectstorage-provisioner` secret that is used by the running provis
   # PC Credentials in format <prism-ip>:<prism-port>:<user>:<password>. 
   # eg. "<ip>:<port>:user:password"
   PC_SECRET: ""
+  # CA Cert for Object Store endpoint TLS in b64 encoded format
+  # empty if no certs should be used.
+  CA_CERT: ""
 ```
 
 Then restart the provisioner pod so that the new secret changes getting mounted on the new pod and will thereon be used.
