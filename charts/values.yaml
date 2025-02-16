@@ -30,6 +30,32 @@ secret:
   # (Default_Prefix: ntnx-cosi-iam-user)
   account_name: "ntnx-cosi-iam-user"
 
+# Certificate to be used by the S3 Client. Example,
+# certs:
+#   ca: |
+#     -----BEGIN CERTIFICATE-----
+#     MIIDVDCCAjygAwIBAgIRALLmZX4DorTkHZzNVhA+RYUwDQYJKoZIhvcNAQELBQAw
+#     FzEVMBMGA1UEChMMTnV0YW5peCBJbmMuMCAXDTI1MDEyNzA4MDU0NVoYDzIyMDQw
+#     NzAzMDgwNTQ1WjAXMRUwEwYDVQQKEwxOdXRhbml4IEluYy4wggEiMA0GCSqGSIb3
+#     DQEBAQUAA4IBDwAwggEKAoIBAQDXvGBSfAByt1VCvAuaDThq7H+JlK8He8zcjqD7
+#     DGe6Dc1jq9n7+eN6X+cTT85dKPhajjPp9Nc4g1HT0jfWHD4QHhgkS12Ny0Wrmqqr
+#     qx8Fcuzhaz89BFyaI3tOCBx75yZe9zaNSOBoKJqreu2mAjfI8LM7jFl/cON68Kd9
+#     /b6g89+2FME0gFq2p3mabGXGVerFAK0g7TuffhWKyKL/B9equZ2M7CmhAO7wa0ko
+#     CnQJY3XvNk4OUeb7NXBdpswpWD789rXSsSMbxaS9ZmDrqvB7A1IlWjwEUVzxYnPw
+#     21miqfZ5qb2p3gZtSTbDOqmg0l9yfvwIroaGKMLrRCK0Q+IjAgMBAAGjgZgwgZUw
+#     DgYDVR0PAQH/BAQDAgKkMA8GA1UdEwEB/wQFMAMBAf8wHQYDVR0OBBYEFPE9h85q
+#     h53rKbrBRd+VnUGuAxpKMFMGA1UdEQRMMEqCInJpbXVydS5wcmlzbS1jZW50cmFs
+#     LmNsdXN0ZXIubG9jYWyCJCoucmltdXJ1LnByaXNtLWNlbnRyYWwuY2x1c3Rlci5s
+#     b2NhbDANBgkqhkiG9w0BAQsFAAOCAQEAd3wN98xaTJqBGE2j0qoSQhqMNb5NmBDa
+#     Cp/Pt0mwlAJmv2petz3ON5edt3/yC81vEvWfT+4GpM/6jAHcY9rZ+XQA+ZkSnjsG
+#     itALgSLq77vDYRTHAXfsWPH2DY140IS6OqqTtLPLukHzux5uR2LH1uggU5sARs5l
+#     EBi1znwsnSxrKfqPOurt4oSgW7FougqiaOiK+Vkm+1FtybVlMXL1w5TkePFK/x7B
+#     OkiKpPoALmPy1Y2BxvbpxQYLjZEFMKwIo7G20pl9opFntCBs6GcY7QNesVYKawV1
+#     zQEsbJYBuhj1XgjzRx+6al2Fjf2NFN3I2aCKQZ9oMFsg0R/M0biBjA==
+#     -----END CERTIFICATE-----
+certs:
+  ca: ""
+
 # COSI central controller specifications.
 cosiController:
   enabled: true

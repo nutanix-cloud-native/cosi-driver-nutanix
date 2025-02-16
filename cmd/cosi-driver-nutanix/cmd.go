@@ -43,6 +43,7 @@ var (
 	PCPassword    = ""
 	PCSecret      = ""
 	AccountName   = ""
+	CACert		  = ""
 )
 
 var cmd = &cobra.Command{
@@ -105,6 +106,12 @@ func init() {
 		AccountName,
 		"User IAM Account Name is an identifier for Nutanix Objects")
 
+	stringFlag(&CACert,
+		"ca_cert",
+		"c",
+		CACert,
+		"CA Certificate")
+
 	viper.BindPFlags(cmd.PersistentFlags())
 	cmd.PersistentFlags().VisitAll(func(f *pflag.Flag) {
 		if viper.IsSet(f.Name) && viper.GetString(f.Name) != "" {
@@ -115,7 +122,7 @@ func init() {
 
 func run(ctx context.Context, args []string) error {
 	PCEndpoint, PCUsername, PCPassword, err := ntnxIam.GetCredsFromPCSecret(PCSecret)
-	klog.InfoS(PCEndpoint, PCUsername, PCPassword, err)
+	klog.InfoS(PCEndpoint, PCUsername, PCPassword, CACert, err)
 	if err != nil {
 		return err
 	}
@@ -128,7 +135,8 @@ func run(ctx context.Context, args []string) error {
 		PCEndpoint,
 		PCUsername,
 		PCPassword,
-		AccountName)
+		AccountName,
+		CACert)
 	if err != nil {
 		return err
 	}

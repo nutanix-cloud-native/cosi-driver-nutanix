@@ -25,9 +25,9 @@ import (
 )
 
 func NewDriver(ctx context.Context, provisioner, ntnxEndpoint, accessKey, secretKey,
-	pcEndpoint, pcUsername, pcPassword, accountName string) (*IdentityServer, *ProvisionerServer, error) {
+	pcEndpoint, pcUsername, pcPassword, accountName, caCertB64 string) (*IdentityServer, *ProvisionerServer, error) {
 
-	s3Client, err := s3client.NewS3Agent(accessKey, secretKey, ntnxEndpoint, true)
+	s3Client, err := s3client.NewS3Agent(accessKey, secretKey, ntnxEndpoint, caCertB64, true)
 	if err != nil {
 		klog.Fatalln(err)
 	}

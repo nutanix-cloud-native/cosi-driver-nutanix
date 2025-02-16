@@ -22,6 +22,9 @@ import (
 	"net/http"
 	"strings"
 	"time"
+	"crypto/x509"
+	"crypto/tls"
+    "encoding/base64"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
@@ -36,13 +39,28 @@ type S3Agent struct {
 	Client *s3.S3
 }
 
-func NewS3Agent(accessKey, secretKey, endpoint string, debug bool) (*S3Agent, error) {
+func NewS3Agent(accessKey, secretKey, endpoint, caCertB64 string, debug bool) (*S3Agent, error) {
 	const nutanixRegion = "us-east-1"
 
 	logLevel := aws.LogOff
 	if debug {
 		logLevel = aws.LogDebug
 	}
+
+	client := &http.Client{
+		Timeout: time.Second * 15,
+	}
+
+	tlsEnabled := false
+	if strings.HasPrefix(endpoint, "https") {
+		tlsEnabled = true
+		transport, err := buildTransportTLS(caCertB64)
+		if err != nil {
+			return nil, err
+		}
+		client.Transport = transport
+	}
+
 	sess, err := session.NewSession(
 		aws.NewConfig().
 			WithRegion(nutanixRegion).
@@ -50,10 +68,8 @@ func NewS3Agent(accessKey, secretKey, endpoint string, debug bool) (*S3Agent, er
 			WithEndpoint(endpoint).
 			WithS3ForcePathStyle(true).
 			WithMaxRetries(5).
-			WithDisableSSL(true).
-			WithHTTPClient(&http.Client{
-				Timeout: time.Second * 15,
-			}).
+			WithDisableSSL(!tlsEnabled).
+			WithHTTPClient(client).
 			WithLogLevel(logLevel),
 	)
 	if err != nil {
@@ -167,4 +183,36 @@ func (s *S3Agent) DeleteObjectInBucket(bucketname string, key string) (bool, err
 
 	}
 	return true, nil
+}
+
+func buildTransportTLS(caCertB64 string) (*http.Transport, error) {
+	if len(caCertB64) == 0 {
+		transport := &http.Transport{
+			TLSClientConfig: &tls.Config{
+				InsecureSkipVerify: true,
+			},
+		}
+		return transport, nil
+	}
+
+	// Decode base64 CA cert
+    caCert, err := base64.StdEncoding.DecodeString(caCertB64)
+    if err != nil {
+        return nil, fmt.Errorf("failed to decode CA cert: %v", err)
+    }
+
+	// Create cert pool and add our CA
+    rootCAs := x509.NewCertPool()
+    if !rootCAs.AppendCertsFromPEM(caCert) {
+        return nil, fmt.Errorf("failed to append CA cert")
+    }
+
+	transport := &http.Transport{
+        TLSClientConfig: &tls.Config{
+            RootCAs: rootCAs,
+			InsecureSkipVerify: false,
+        },
+    }
+
+	return transport, nil
 }
