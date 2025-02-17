@@ -24,7 +24,7 @@ import (
 	"time"
 	"crypto/x509"
 	"crypto/tls"
-    "encoding/base64"
+	"encoding/base64"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
@@ -196,23 +196,23 @@ func buildTransportTLS(caCertB64 string) (*http.Transport, error) {
 	}
 
 	// Decode base64 CA cert
-    caCert, err := base64.StdEncoding.DecodeString(caCertB64)
-    if err != nil {
-        return nil, fmt.Errorf("failed to decode CA cert: %v", err)
-    }
+	caCert, err := base64.StdEncoding.DecodeString(caCertB64)
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode CA cert: %v", err)
+	}
 
 	// Create cert pool and add our CA
-    rootCAs := x509.NewCertPool()
-    if !rootCAs.AppendCertsFromPEM(caCert) {
-        return nil, fmt.Errorf("failed to append CA cert")
-    }
+	rootCAs := x509.NewCertPool()
+	if !rootCAs.AppendCertsFromPEM(caCert) {
+		return nil, fmt.Errorf("failed to append CA cert")
+	}
 
 	transport := &http.Transport{
-        TLSClientConfig: &tls.Config{
-            RootCAs: rootCAs,
+		TLSClientConfig: &tls.Config{
+			RootCAs:            rootCAs,
 			InsecureSkipVerify: false,
-        },
-    }
+		},
+	}
 
 	return transport, nil
 }
