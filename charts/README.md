@@ -56,7 +56,9 @@ The following table lists the configurable parameters of the cosi-driver-nutanix
 | `secret.pc_username`                               | PC username                                                                | `""`                                                                         |
 | `secret.pc_password`                               | PC password                                                                | `""`                                                                         |
 | `secret.account_name`                              | Account Name is a displayName identifier Prefix for Nutanix                | `"ntnx-cosi-iam-user"`                                                       |
-| `certs.ca`                         			     | Certificate to be used by the S3 Client									  | `""`                              					                         |
+| `tls.insecure`                                     | Controls whether certificate chain will be validated                       | `false`                                                                      |
+| `tls.secretName`                                   | Specify an existing secret name to use for the tls certificates            | `""`                                                                         |
+| `tls.rootCas`                                      | Base64 encoded content of the root certificate authority file              | `""`                                                                         |
 | `cosiController.enabled`                           | Whether to create the COSI central controller deployment and its resources | `true`                                                                       |
 | `cosiController.logLevel`                          | Verbosity of logs for COSI central controller deployment                   | `5`                                                                          |
 | `cosiController.image.registery`                   | Image registry for COSI central controller deployment                      | `gcr.io/`                                                                    |
@@ -88,6 +90,17 @@ Install the driver in the `cosi-driver-nutanix` namespace (add the `--create-nam
  ```console
  helm install cosi-driver -n cosi-driver-nutanix -f values.yaml .
  ```
+
+### Steps to add the TLS certificates to the installation of COSI:
+In `values.yaml` file, 
+1. Set `tls.insecure` to `false`.
+2. Add the root CA certificate in the `tls.rootCAs` in Base64 encoded format. Eg: `rootCAs: "LS0tLS1CRUdJTiBDRVJUS...USUZJQ0FURS0tLS0tCg=="`
+
+If using private k8s secret for storing certs, add the k8s secret name in the `tls.secretName` field. The secret should be in the same namespace as the driver pod. Secret can be created in this way:
+```console
+kubectl create secret generic cacert --from-file=CA_CERT=cert.pem -n cosi-driver-nutanix
+```
+Then add the secret name ("cacert") in `values.yaml` `tls.secretName` field.
 
 ### Steps to update the Nutanix Object store details while installing COSI:
 1. Open Prism Central UI in any browser and go the objects page. In the below screenshot, already an object store called `cosi` is deployed which is ready for use. On the right side of the object store, you will see the objects Public IPs which you can use as the endpoint in the format: `http:<objects public ip>:80`.

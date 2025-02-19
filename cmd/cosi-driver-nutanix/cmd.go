@@ -44,6 +44,7 @@ var (
 	PCSecret      = ""
 	AccountName   = ""
 	CACert        = ""
+	Insecure      = ""
 )
 
 var cmd = &cobra.Command{
@@ -112,6 +113,12 @@ func init() {
 		CACert,
 		"CA Certificate")
 
+	stringFlag(&Insecure,
+		"insecure",
+		"i",
+		Insecure,
+		"S3 Tls connection")
+
 	viper.BindPFlags(cmd.PersistentFlags())
 	cmd.PersistentFlags().VisitAll(func(f *pflag.Flag) {
 		if viper.IsSet(f.Name) && viper.GetString(f.Name) != "" {
@@ -122,10 +129,12 @@ func init() {
 
 func run(ctx context.Context, args []string) error {
 	PCEndpoint, PCUsername, PCPassword, err := ntnxIam.GetCredsFromPCSecret(PCSecret)
-	klog.InfoS(PCEndpoint, PCUsername, PCPassword, CACert, err)
+	klog.InfoS(PCEndpoint, PCUsername, PCPassword, err)
 	if err != nil {
 		return err
 	}
+	
+	klog.InfoS("imported from env variables", "AccessKey", AccessKey, "SecretKey", SecretKey, "Endpoint", Endpoint, "PCEndpoint", PCEndpoint, "PCUsername", PCUsername, "PCPassword", PCPassword, "PCSecret", PCSecret, "AccountName", AccountName, "CACert", CACert, "Insecure", Insecure)
 
 	identityServer, bucketProvisioner, err := driver.NewDriver(ctx,
 		provisionerName,
@@ -136,7 +145,8 @@ func run(ctx context.Context, args []string) error {
 		PCUsername,
 		PCPassword,
 		AccountName,
-		CACert)
+		CACert,
+		Insecure)
 	if err != nil {
 		return err
 	}

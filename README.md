@@ -42,8 +42,9 @@ $ cd cosi-driver-nutanix
 - `ACCESS_KEY` : Nutanix Object Store Access Key
 - `SECRET_KEY` : Nutanix Object Store Secret Key
 - `PC_SECRET` : Prism Central Credentials in the form 'prism-ip:prism-port:username:password'
+- `INSECURE` : Controls whether certificate chain will be validated (Default: "false")
 - `ACCOUNT_NAME` (Optional) : DisplayName identifier prefix for Nutanix Object Store (Default_Prefix: ntnx-cosi-iam-user)
-- `CA_CERT` (Optional) : CA Certificate to be used by the S3 Client (Default: "")
+- `CA_CERT` (Optional) : Base64 encoded content of the root certificate authority file for S3 endpoint (Default: "")
 
 **Pre-requisites:**
 Already deployed Nutanix object-store
@@ -166,7 +167,11 @@ Update the `objectstorage-provisioner` secret that is used by the running provis
   # PC Credentials in format <prism-ip>:<prism-port>:<user>:<password>. 
   # eg. "<ip>:<port>:user:password"
   PC_SECRET: ""
-  # CA Cert for Object Store endpoint TLS in b64 encoded format
+  # Controls whether certificate chain will be validated
+  # If INSECURE is set to "true", an insecure connection will be made with
+  # the S3 endpoint (Certs will not be used)
+  INSECURE: "false"
+  # Base64 encoded content of the root certificate authority file
   # empty if no certs should be used.
   CA_CERT: ""
 ```

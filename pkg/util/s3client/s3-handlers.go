@@ -18,13 +18,13 @@ package s3client
 
 import (
 	"bytes"
+	"crypto/tls"
+	"crypto/x509"
+	"encoding/base64"
 	"fmt"
 	"net/http"
 	"strings"
 	"time"
-	"crypto/x509"
-	"crypto/tls"
-	"encoding/base64"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
@@ -34,31 +34,48 @@ import (
 	"k8s.io/klog/v2"
 )
 
+const (
+	ErrNoSuchBucket = "NoSuchBucket"
+)
+
+type TlsConfig struct {
+	CACert   string
+	Insecure bool
+}
+
 // S3Agent wraps the s3.S3 structure to allow for wrapper methods
 type S3Agent struct {
 	Client *s3.S3
 }
 
-func NewS3Agent(accessKey, secretKey, endpoint, caCertB64 string, debug bool) (*S3Agent, error) {
+func NewS3Agent(accessKey, secretKey, endpoint, caCert, insecure string, debug bool) (*S3Agent, error) {
 	const nutanixRegion = "us-east-1"
+
+	tlsConfig := TlsConfig{
+		CACert:   caCert,
+		Insecure: false,
+	}
+
+	if insecure == "true" {
+		tlsConfig.Insecure = true
+	}
+
+	if !tlsConfig.Insecure && strings.HasPrefix(endpoint, "http://") {
+		return nil, fmt.Errorf("'http' endpoint cannot be secure")
+	}
 
 	logLevel := aws.LogOff
 	if debug {
 		logLevel = aws.LogDebug
 	}
 
-	client := &http.Client{
-		Timeout: time.Second * 15,
+	transport, err := buildTransportTLS(tlsConfig)
+	if err != nil {
+		return nil, err
 	}
-
-	tlsEnabled := false
-	if strings.HasPrefix(endpoint, "https") {
-		tlsEnabled = true
-		transport, err := buildTransportTLS(caCertB64)
-		if err != nil {
-			return nil, err
-		}
-		client.Transport = transport
+	client := &http.Client{
+		Timeout:   time.Second * 15,
+		Transport: transport,
 	}
 
 	sess, err := session.NewSession(
@@ -68,7 +85,7 @@ func NewS3Agent(accessKey, secretKey, endpoint, caCertB64 string, debug bool) (*
 			WithEndpoint(endpoint).
 			WithS3ForcePathStyle(true).
 			WithMaxRetries(5).
-			WithDisableSSL(!tlsEnabled).
+			WithDisableSSL(tlsConfig.Insecure).
 			WithHTTPClient(client).
 			WithLogLevel(logLevel),
 	)
@@ -185,33 +202,45 @@ func (s *S3Agent) DeleteObjectInBucket(bucketname string, key string) (bool, err
 	return true, nil
 }
 
-func buildTransportTLS(caCertB64 string) (*http.Transport, error) {
-	if len(caCertB64) == 0 {
-		transport := &http.Transport{
+func buildTransportTLS(tlsConfig TlsConfig) (*http.Transport, error) {
+	var transport *http.Transport
+
+	if tlsConfig.Insecure {
+		transport = &http.Transport{
 			TLSClientConfig: &tls.Config{
 				InsecureSkipVerify: true,
 			},
 		}
-		return transport, nil
-	}
 
-	// Decode base64 CA cert
-	caCert, err := base64.StdEncoding.DecodeString(caCertB64)
-	if err != nil {
-		return nil, fmt.Errorf("failed to decode CA cert: %v", err)
-	}
+		klog.InfoS("insecure connection applied.", "insecure", tlsConfig.Insecure)
+	} else {
+		var rootCAs []byte
+		if strings.Contains(tlsConfig.CACert, "-----BEGIN CERTIFICATE-----") && strings.Contains(tlsConfig.CACert, "-----END CERTIFICATE-----") {
+			rootCAs = []byte(tlsConfig.CACert)
+		} else {
+			// Decode base64 CA cert
+			_rootCAs, err := base64.StdEncoding.DecodeString(tlsConfig.CACert)
+			if err != nil {
+				return nil, fmt.Errorf("failed to decode CA cert: %v", err)
+			}
 
-	// Create cert pool and add our CA
-	rootCAs := x509.NewCertPool()
-	if !rootCAs.AppendCertsFromPEM(caCert) {
-		return nil, fmt.Errorf("failed to append CA cert")
-	}
+			rootCAs = _rootCAs
+		}
+		
+		// Create cert pool and add our CA
+		caCertPool := x509.NewCertPool()
+		if !caCertPool.AppendCertsFromPEM(rootCAs) {
+			return nil, fmt.Errorf("failed to append CA cert")
+		}
 
-	transport := &http.Transport{
-		TLSClientConfig: &tls.Config{
-			RootCAs:            rootCAs,
-			InsecureSkipVerify: false,
-		},
+		transport = &http.Transport{
+			TLSClientConfig: &tls.Config{
+				RootCAs:            caCertPool,
+				InsecureSkipVerify: false,
+			},
+		}
+
+		klog.InfoS("secure connection applied.", "insecure", tlsConfig.Insecure)
 	}
 
 	return transport, nil

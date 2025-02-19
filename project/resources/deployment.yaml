@@ -36,7 +36,7 @@ spec:
       - name: socket
         emptyDir: {}
       containers:
-      - name: ntnx-system
+      - name: objectstorage-provisioner
         image: $(NTNX_IMAGE_ORG)/cosi-driver-nutanix:$(NTNX_IMAGE_VERSION)
         imagePullPolicy: IfNotPresent
         envFrom:
