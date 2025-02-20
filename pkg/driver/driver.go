@@ -25,14 +25,14 @@ import (
 )
 
 func NewDriver(ctx context.Context, provisioner, ntnxEndpoint, accessKey, secretKey,
-	pcEndpoint, pcUsername, pcPassword, accountName, caCert, Insecure string) (*IdentityServer, *ProvisionerServer, error) {
+	pcEndpoint, pcUsername, pcPassword, accountName, s3CaCert, pcCaCert, insecure string) (*IdentityServer, *ProvisionerServer, error) {
 
-	s3Client, err := s3client.NewS3Agent(accessKey, secretKey, ntnxEndpoint, caCert, Insecure, true)
+	s3Client, err := s3client.NewS3Agent(accessKey, secretKey, ntnxEndpoint, s3CaCert, insecure, true)
 	if err != nil {
 		klog.Fatalln(err)
 	}
 
-	ntnxIamClient, err := ntnxIam.New(ntnxEndpoint, accessKey, secretKey, pcEndpoint, pcUsername, pcPassword, accountName, nil)
+	ntnxIamClient, err := ntnxIam.New(ntnxEndpoint, accessKey, secretKey, pcEndpoint, pcUsername, pcPassword, accountName, pcCaCert, insecure, nil)
 	if err != nil {
 		klog.Fatalln(err)
 	}

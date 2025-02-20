@@ -58,7 +58,8 @@ The following table lists the configurable parameters of the cosi-driver-nutanix
 | `secret.account_name`                              | Account Name is a displayName identifier Prefix for Nutanix                | `"ntnx-cosi-iam-user"`                                                       |
 | `tls.insecure`                                     | Controls whether certificate chain will be validated                       | `false`                                                                      |
 | `tls.secretName`                                   | Specify an existing secret name to use for the tls certificates            | `""`                                                                         |
-| `tls.rootCas`                                      | Base64 encoded content of the root certificate authority file              | `""`                                                                         |
+| `tls.s3.rootCas`                                   | Base64 encoded content of the root certificate file for objectstore        | `""`                                                                         |
+| `tls.pc.rootCas`                                   | Base64 encoded content of the root certificate file for Prism Central      | `""`                                                                         |
 | `cosiController.enabled`                           | Whether to create the COSI central controller deployment and its resources | `true`                                                                       |
 | `cosiController.logLevel`                          | Verbosity of logs for COSI central controller deployment                   | `5`                                                                          |
 | `cosiController.image.registery`                   | Image registry for COSI central controller deployment                      | `gcr.io/`                                                                    |
@@ -98,7 +99,7 @@ In `values.yaml` file,
 
 If using private k8s secret for storing certs, add the k8s secret name in the `tls.secretName` field. The secret should be in the same namespace as the driver pod. Secret can be created in this way:
 ```console
-kubectl create secret generic cacert --from-file=CA_CERT=cert.pem -n cosi-driver-nutanix
+kubectl create secret generic cacert --from-file=S3_A_CERT=s3_cert.pem --from-file=PC_CA_CERT=pc_cert.crt -n cosi-driver-nutanix
 ```
 Then add the secret name ("cacert") in `values.yaml` `tls.secretName` field.
 

@@ -2,11 +2,16 @@ package admin
 
 import (
 	"crypto/tls"
+	"crypto/x509"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"net"
 	"net/http"
 	"strings"
+	"time"
+
+	"k8s.io/klog/v2"
 )
 
 var (
@@ -17,6 +22,11 @@ var (
 	errNoPCUsername = errors.New("Prism Central username for IAM user management not set")
 	errNoPCPassword = errors.New("Prism Central password for IAM user management not set")
 )
+
+type TlsConfig struct {
+	CACert   string
+	Insecure bool
+}
 
 // HTTPClient interface that conforms to that of the http package's Client.
 type HTTPClient interface {
@@ -36,7 +46,7 @@ type API struct {
 }
 
 // New returns client for Nutanix object store
-func New(endpoint, accessKey, secretKey, pcEndpoint, pcUsername, pcPassword, accountName string, httpClient HTTPClient) (*API, error) {
+func New(endpoint, accessKey, secretKey, pcEndpoint, pcUsername, pcPassword, accountName, caCert, insecure string, httpClient HTTPClient) (*API, error) {
 	// validate endpoint
 	if endpoint == "" {
 		return nil, errNoEndpoint
@@ -72,13 +82,18 @@ func New(endpoint, accessKey, secretKey, pcEndpoint, pcUsername, pcPassword, acc
 		accountName = "ntnx-cosi-iam-user"
 	}
 
-	// If no client is passed initialize it
-	if httpClient == nil {
-		// SSL certificate verification turned off
-		tr := &http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-		}
-		httpClient = &http.Client{Transport: tr}
+	tlsConfig := TlsConfig{
+		CACert:   caCert,
+		Insecure: false,
+	}
+
+	transport, err := buildTransportTLS(tlsConfig)
+	if err != nil {
+		return nil, err
+	}
+	client := &http.Client{
+		Timeout:   time.Second * 15,
+		Transport: transport,
 	}
 
 	return &API{
@@ -89,7 +104,7 @@ func New(endpoint, accessKey, secretKey, pcEndpoint, pcUsername, pcPassword, acc
 		PCUsername:  pcUsername,
 		PCPassword:  pcPassword,
 		AccountName: accountName,
-		HTTPClient:  httpClient,
+		HTTPClient:  client,
 	}, nil
 }
 
@@ -122,4 +137,48 @@ func ValidateEndpoint(endpoint string) error {
 	}
 
 	return nil
+}
+
+func buildTransportTLS(tlsConfig TlsConfig) (*http.Transport, error) {
+	var transport *http.Transport
+
+	if tlsConfig.Insecure {
+		transport = &http.Transport{
+			TLSClientConfig: &tls.Config{
+				InsecureSkipVerify: true,
+			},
+		}
+
+		klog.InfoS("insecure connection to prism centralapplied.", "insecure", tlsConfig.Insecure)
+	} else {
+		var rootCAs []byte
+		if strings.Contains(tlsConfig.CACert, "-----BEGIN CERTIFICATE-----") && strings.Contains(tlsConfig.CACert, "-----END CERTIFICATE-----") {
+			rootCAs = []byte(tlsConfig.CACert)
+		} else {
+			// Decode base64 CA cert
+			_rootCAs, err := base64.StdEncoding.DecodeString(tlsConfig.CACert)
+			if err != nil {
+				return nil, fmt.Errorf("failed to decode CA cert: %v", err)
+			}
+
+			rootCAs = _rootCAs
+		}
+
+		// Create cert pool and add our CA
+		caCertPool := x509.NewCertPool()
+		if !caCertPool.AppendCertsFromPEM(rootCAs) {
+			return nil, fmt.Errorf("failed to append CA cert")
+		}
+
+		transport = &http.Transport{
+			TLSClientConfig: &tls.Config{
+				RootCAs:            caCertPool,
+				InsecureSkipVerify: false,
+			},
+		}
+
+		klog.InfoS("secure connection to prism central applied.", "insecure", tlsConfig.Insecure)
+	}
+
+	return transport, nil
 }

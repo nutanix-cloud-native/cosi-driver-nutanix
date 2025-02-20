@@ -212,7 +212,7 @@ func buildTransportTLS(tlsConfig TlsConfig) (*http.Transport, error) {
 			},
 		}
 
-		klog.InfoS("insecure connection applied.", "insecure", tlsConfig.Insecure)
+		klog.InfoS("insecure connection to objectstore applied.", "insecure", tlsConfig.Insecure)
 	} else {
 		var rootCAs []byte
 		if strings.Contains(tlsConfig.CACert, "-----BEGIN CERTIFICATE-----") && strings.Contains(tlsConfig.CACert, "-----END CERTIFICATE-----") {
@@ -240,7 +240,7 @@ func buildTransportTLS(tlsConfig TlsConfig) (*http.Transport, error) {
 			},
 		}
 
-		klog.InfoS("secure connection applied.", "insecure", tlsConfig.Insecure)
+		klog.InfoS("secure connection to objectstore applied.", "insecure", tlsConfig.Insecure)
 	}
 
 	return transport, nil

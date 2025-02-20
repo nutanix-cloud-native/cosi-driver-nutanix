@@ -43,7 +43,8 @@ var (
 	PCPassword    = ""
 	PCSecret      = ""
 	AccountName   = ""
-	CACert        = ""
+	S3CACert      = ""
+	PcCACert      = ""
 	Insecure      = ""
 )
 
@@ -107,17 +108,23 @@ func init() {
 		AccountName,
 		"User IAM Account Name is an identifier for Nutanix Objects")
 
-	stringFlag(&CACert,
-		"ca_cert",
+	stringFlag(&S3CACert,
+		"s3_ca_cert",
 		"c",
-		CACert,
-		"CA Certificate")
+		S3CACert,
+		"S3 CA Certificate")
+
+	stringFlag(&PcCACert,
+		"pc_ca_cert",
+		"p",
+		PcCACert,
+		"PC CA Certificate")
 
 	stringFlag(&Insecure,
 		"insecure",
 		"i",
 		Insecure,
-		"S3 Tls connection")
+		"Controls whether certificate chain will be validated")
 
 	viper.BindPFlags(cmd.PersistentFlags())
 	cmd.PersistentFlags().VisitAll(func(f *pflag.Flag) {
@@ -133,8 +140,8 @@ func run(ctx context.Context, args []string) error {
 	if err != nil {
 		return err
 	}
-	
-	klog.InfoS("imported from env variables", "AccessKey", AccessKey, "SecretKey", SecretKey, "Endpoint", Endpoint, "PCEndpoint", PCEndpoint, "PCUsername", PCUsername, "PCPassword", PCPassword, "PCSecret", PCSecret, "AccountName", AccountName, "CACert", CACert, "Insecure", Insecure)
+
+	klog.InfoS("imported from env variables", "AccessKey", AccessKey, "SecretKey", SecretKey, "Endpoint", Endpoint, "PCEndpoint", PCEndpoint, "PCUsername", PCUsername, "PCPassword", PCPassword, "PCSecret", PCSecret, "AccountName", AccountName, "S3CACert", S3CACert, "PcCACert", PcCACert, "Insecure", Insecure)
 
 	identityServer, bucketProvisioner, err := driver.NewDriver(ctx,
 		provisionerName,
@@ -145,7 +152,8 @@ func run(ctx context.Context, args []string) error {
 		PCUsername,
 		PCPassword,
 		AccountName,
-		CACert,
+		S3CACert,
+		PcCACert,
 		Insecure)
 	if err != nil {
 		return err

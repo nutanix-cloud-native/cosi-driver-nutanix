@@ -44,7 +44,8 @@ $ cd cosi-driver-nutanix
 - `PC_SECRET` : Prism Central Credentials in the form 'prism-ip:prism-port:username:password'
 - `INSECURE` : Controls whether certificate chain will be validated (Default: "false")
 - `ACCOUNT_NAME` (Optional) : DisplayName identifier prefix for Nutanix Object Store (Default_Prefix: ntnx-cosi-iam-user)
-- `CA_CERT` (Optional) : Base64 encoded content of the root certificate authority file for S3 endpoint (Default: "")
+- `S3_CA_CERT` (Optional) : Base64 encoded content of the root certificate authority file for S3 endpoint (Default: "")
+- `PC_CA_CERT` (Optional) : Base64 encoded content of the root certificate authority file for Prism Central (Default: "")
 
 **Pre-requisites:**
 Already deployed Nutanix object-store
