@@ -141,8 +141,6 @@ func run(ctx context.Context, args []string) error {
 		return err
 	}
 
-	klog.InfoS("imported from env variables", "AccessKey", AccessKey, "SecretKey", SecretKey, "Endpoint", Endpoint, "PCEndpoint", PCEndpoint, "PCUsername", PCUsername, "PCPassword", PCPassword, "PCSecret", PCSecret, "AccountName", AccountName, "S3CACert", S3CACert, "PcCACert", PcCACert, "Insecure", Insecure)
-
 	identityServer, bucketProvisioner, err := driver.NewDriver(ctx,
 		provisionerName,
 		Endpoint,

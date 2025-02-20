@@ -87,6 +87,10 @@ func New(endpoint, accessKey, secretKey, pcEndpoint, pcUsername, pcPassword, acc
 		Insecure: false,
 	}
 
+	if insecure == "true" {
+		tlsConfig.Insecure = true
+	}
+
 	transport, err := buildTransportTLS(tlsConfig)
 	if err != nil {
 		return nil, err
@@ -149,7 +153,7 @@ func buildTransportTLS(tlsConfig TlsConfig) (*http.Transport, error) {
 			},
 		}
 
-		klog.InfoS("insecure connection to prism centralapplied.", "insecure", tlsConfig.Insecure)
+		klog.InfoS("insecure connection to prism central applied.", "insecure", tlsConfig.Insecure)
 	} else {
 		var rootCAs []byte
 		if strings.Contains(tlsConfig.CACert, "-----BEGIN CERTIFICATE-----") && strings.Contains(tlsConfig.CACert, "-----END CERTIFICATE-----") {
