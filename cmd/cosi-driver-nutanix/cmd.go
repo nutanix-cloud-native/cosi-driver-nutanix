@@ -43,6 +43,9 @@ var (
 	PCPassword    = ""
 	PCSecret      = ""
 	AccountName   = ""
+	S3CACert      = ""
+	PcCACert      = ""
+	Insecure      = ""
 )
 
 var cmd = &cobra.Command{
@@ -105,6 +108,24 @@ func init() {
 		AccountName,
 		"User IAM Account Name is an identifier for Nutanix Objects")
 
+	stringFlag(&S3CACert,
+		"s3_ca_cert",
+		"c",
+		S3CACert,
+		"S3 CA Certificate")
+
+	stringFlag(&PcCACert,
+		"pc_ca_cert",
+		"p",
+		PcCACert,
+		"PC CA Certificate")
+
+	stringFlag(&Insecure,
+		"insecure",
+		"i",
+		Insecure,
+		"Controls whether certificate chain will be validated")
+
 	viper.BindPFlags(cmd.PersistentFlags())
 	cmd.PersistentFlags().VisitAll(func(f *pflag.Flag) {
 		if viper.IsSet(f.Name) && viper.GetString(f.Name) != "" {
@@ -128,7 +149,10 @@ func run(ctx context.Context, args []string) error {
 		PCEndpoint,
 		PCUsername,
 		PCPassword,
-		AccountName)
+		AccountName,
+		S3CACert,
+		PcCACert,
+		Insecure)
 	if err != nil {
 		return err
 	}

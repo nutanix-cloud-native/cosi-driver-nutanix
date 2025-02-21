@@ -13,7 +13,7 @@ image:
 # Secret used by the cosi-driver-nutanix sidecar for objects management.
 secret:
   enabled: true
-  # Nutanix Object Store instance endpoint, eg. "http://10.51.142.82:80".
+  # Nutanix Object Store instance endpoint, eg. "http://10.51.142.82:".
   endpoint: ""
   # Admin IAM Access key to be used for Nutanix Objects.
   access_key: ""
@@ -29,6 +29,15 @@ secret:
   # result in only one access token being created.
   # (Default_Prefix: ntnx-cosi-iam-user)
   account_name: "ntnx-cosi-iam-user"
+
+tls:
+  # Controls whether certificate chain will be validated.
+  # If insecure is set to true, an insecure connection will be made with
+  # the S3 endpoint. (Certs will not be used)
+  insecure: false
+  # If secretName is provided, value of rootCAs
+  # will be ignored and taken from the secret.
+  secretName: ""
 
 # COSI central controller specifications.
 cosiController:

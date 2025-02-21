@@ -31,6 +31,10 @@ spec:
       - envFrom:
         - secretRef:
             name: objectstorage-provisioner
+        {{- if .Values.tls.secretName }}
+        - secretRef:
+            name: {{ .Values.tls.secretName }}
+        {{- end }}
         image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         name: cosi-driver-nutanix
