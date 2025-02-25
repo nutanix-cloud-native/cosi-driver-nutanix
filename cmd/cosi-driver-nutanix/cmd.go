@@ -98,7 +98,7 @@ func init() {
 		"pc_secret",
 		"k",
 		PCSecret,
-		"Base64 encoded format of <prism-ip>:<prism-port>:<pc_user>:<pc_password>")
+		"Prism Central Credentials in the format <prism-ip>:<prism-port>:<pc_user>:<pc_password>")
 
 	stringFlag(&AccountName,
 		"account_name",
@@ -117,7 +117,7 @@ func init() {
 func run(ctx context.Context) error {
 	PCEndpoint, PCUsername, PCPassword, err := ntnxIam.GetCredsFromPCSecret(PCSecret)
 	if err != nil {
-		errMsg := fmt.Errorf("failed to extract PC credential information from secret %q: %w", PCSecret, err)
+		errMsg := fmt.Errorf("failed to extract PC credential information from secret: %w", err)
 		klog.Error(errMsg)
 		return err
 	}
