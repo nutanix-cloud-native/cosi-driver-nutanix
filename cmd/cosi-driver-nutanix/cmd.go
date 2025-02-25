@@ -19,6 +19,7 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"strings"
 
 	ntnxIam "github.com/nutanix-core/k8s-ntnx-object-cosi/pkg/admin"
@@ -50,8 +51,8 @@ var cmd = &cobra.Command{
 	Short:         "Kubernetes COSI driver for Nutanix Object Store",
 	SilenceErrors: true,
 	SilenceUsage:  true,
-	RunE: func(cmd *cobra.Command, args []string) error {
-		return run(cmd.Context(), args)
+	RunE: func(cmd *cobra.Command, _ []string) error {
+		return run(cmd.Context())
 	},
 	DisableFlagsInUseLine: true,
 }
@@ -113,10 +114,11 @@ func init() {
 	})
 }
 
-func run(ctx context.Context, args []string) error {
+func run(ctx context.Context) error {
 	PCEndpoint, PCUsername, PCPassword, err := ntnxIam.GetCredsFromPCSecret(PCSecret)
-	klog.InfoS(PCEndpoint, PCUsername, PCPassword, err)
 	if err != nil {
+		errMsg := fmt.Errorf("failed to extract PC credential information from secret %q: %w", PCSecret, err)
+		klog.Error(errMsg)
 		return err
 	}
 
