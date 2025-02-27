@@ -39,38 +39,38 @@ To know more about the various flag options used with upgrade command check out 
 
 The following table lists the configurable parameters of the cosi-driver-nutanix chart and their default values.
 
-| Parameter                                          | Description                                                                | Default                                                                      |
-|----------------------------------------------------|----------------------------------------------------------------------------|------------------------------------------------------------------------------|
-| `nameOverride`                                     | To override the name of the cosi-driver chart                              | `""`                                                                         |
-| `fullnameOverride`                                 | To override the full name of the cosi-driver chart                         | `""`                                                                         |
-| `image.registry`                                   | Image registry for cosi-driver-nutanix sidecar                             | `ghcr.io/`                                                                   |
-| `image.repository`                                 | Image repository for cosi-driver-nutanix sidecar                           | `nutanix-cloud-native/cosi-driver-nutanix`                                   |
-| `image.tag`                                        | Image tag for cosi-driver-nutanix sidecar                                  | `""`                                                                         |
-| `image.pullPolicy`                                 | Image registry for cosi-driver-nutanix sidecar                             | `IfNotPresent`                                                               |
-| `secret.enabled`                                   | Enables K8s secret deployment for Nutanix Object Store                     | `true`                                                                       |
-| `secret.endpoint`                                  | Nutanix Object Store instance endpoint                                     | `""`                                                                         |
-| `secret.access_key`                                | Admin IAM Access key to be used for Nutanix Objects                        | `""`                                                                         |
-| `secret.secret_key`                                | Admin IAM Secret key to be used for Nutanix Objects                        | `""`                                                                         |
-| `secret.pc_ip`                                     | PC ip                                                                      | `""`                                                                         |
-| `secret.pc_port`                                   | PC port                                                                    | `""`                                                                         |
-| `secret.pc_username`                               | PC username                                                                | `""`                                                                         |
-| `secret.pc_password`                               | PC password                                                                | `""`                                                                         |
-| `secret.account_name`                              | Account Name is a displayName identifier Prefix for Nutanix                | `"ntnx-cosi-iam-user"`                                                       |
-| `tls.insecure`                                     | Controls whether certificate chain will be validated                       | `false`                                                                      |
-| `tls.secretName`                                   | Specify an existing secret name to use for the tls certificates            | `""`                                                                         |
-| `tls.s3.rootCas`                                   | Base64 encoded content of the root certificate file for objectstore        | `""`                                                                         |
-| `tls.pc.rootCas`                                   | Base64 encoded content of the root certificate file for Prism Central      | `""`                                                                         |
-| `cosiController.enabled`                           | Whether to create the COSI central controller deployment and its resources | `true`                                                                       |
-| `cosiController.logLevel`                          | Verbosity of logs for COSI central controller deployment                   | `5`                                                                          |
-| `cosiController.image.registery`                   | Image registry for COSI central controller deployment                      | `gcr.io/`                                                                    |
-| `cosiController.image.repository`                  | Image repository for COSI central controller deployment                    | `k8s-staging-sig-storage/objectstorage-controller`                           |
-| `cosiController.image.tag`                         | Image tag for COSI central controller deployment                           | `v20250110-a29e5f6`                                                |
-| `cosiController.image.pullPolicy`                  | Image pull policy for COSI central controller deployment                   | `Always`                                                                     |
-| `objectstorageProvisionerSidecar.logLevel`         | Verbosity of logs for COSI sidecar                                         | `5`                                                                          |
-| `objectstorageProvisionerSidecar.image.registery`  | Image registry for COSI sidecar                                            | `gcr.io/`                                                                    |
-| `objectstorageProvisionerSidecar.image.repository` | Image repository for COSI sidecar                                          | `k8s-staging-sig-storage/objectstorage-sidecar/objectstorage-sidecar@sha256` |
-| `objectstorageProvisionerSidecar.image.tag`        | Image tag for COSI sidecar                                                 | `589c0ad4ef5d0855fe487440e634d01315bc3d883f91c44cb72577ea6e12c890`           |
-| `objectstorageProvisionerSidecar.image.pullPolicy` | Image pull policy for COSI sidecar                                         | `Always`                                                                     |
+| Parameter                                          | Description                                                                | Required | Default                                                                      | 
+|----------------------------------------------------|----------------------------------------------------------------------------|----------|------------------------------------------------------------------------------|
+| `nameOverride`                                     | To override the name of the cosi-driver chart                              | No       | `""`                                                                         |
+| `fullnameOverride`                                 | To override the full name of the cosi-driver chart                         | No       | `""`                                                                         |
+| `image.registry`                                   | Image registry for cosi-driver-nutanix sidecar                             | Yes      | `ghcr.io/`                                                                   |
+| `image.repository`                                 | Image repository for cosi-driver-nutanix sidecar                           | Yes      | `nutanix-cloud-native/cosi-driver-nutanix`                                   |
+| `image.tag`                                        | Image tag for cosi-driver-nutanix sidecar                                  | No       | `""`                                                                         |
+| `image.pullPolicy`                                 | Image registry for cosi-driver-nutanix sidecar                             | Yes      | `IfNotPresent`                                                               |
+| `secret.enabled`                                   | Enables K8s secret deployment for Nutanix Object Store                     | Yes      | `true`                                                                       |
+| `secret.endpoint`                                  | Nutanix Object Store instance endpoint                                     | Yes      | `""`                                                                         |
+| `secret.access_key`                                | Admin IAM Access key to be used for Nutanix Objects                        | Yes      | `""`                                                                         |
+| `secret.secret_key`                                | Admin IAM Secret key to be used for Nutanix Objects                        | Yes      | `""`                                                                         |
+| `secret.pc_ip`                                     | PC ip                                                                      | Yes      | `""`                                                                         |
+| `secret.pc_port`                                   | PC port                                                                    | Yes      | `""`                                                                         |
+| `secret.pc_username`                               | PC username                                                                | Yes      | `""`                                                                         |
+| `secret.pc_password`                               | PC password                                                                | Yes      | `""`                                                                         |
+| `secret.account_name`                              | Account Name is a displayName identifier Prefix for Nutanix                | No       | `"ntnx-cosi-iam-user"`                                                       |
+| `tls.insecure`                                     | Controls whether certificate chain will be validated                       | Yes      | `false`                                                                      |
+| `tls.caSecretName`                                   | Specify an existing secret name to use for the tls certificates            | No       | `""`                                                                         |
+| `tls.s3.rootCAs`                                   | Base64 encoded content of root certificate for objectstore                 | No       | `""`                                                                         |
+| `tls.pc.rootCAs`                                   | Base64 encoded content of root certificate for Prism Central               | No       | `""`                                                                         |
+| `cosiController.enabled`                           | Whether to create the COSI central controller deployment and its resources | Yes      | `true`                                                                       |
+| `cosiController.logLevel`                          | Verbosity of logs for COSI central controller deployment                   | No       | `5`                                                                          |
+| `cosiController.image.registery`                   | Image registry for COSI central controller deployment                      | No       | `gcr.io/`                                                                    |
+| `cosiController.image.repository`                  | Image repository for COSI central controller deployment                    | No       | `k8s-staging-sig-storage/objectstorage-controller`                           |
+| `cosiController.image.tag`                         | Image tag for COSI central controller deployment                           | No       | `v20250110-a29e5f6`                                                |
+| `cosiController.image.pullPolicy`                  | Image pull policy for COSI central controller deployment                   | No       | `Always`                                                                     |
+| `objectstorageProvisionerSidecar.logLevel`         | Verbosity of logs for COSI sidecar                                         | Yes      | `5`                                                                          |
+| `objectstorageProvisionerSidecar.image.registery`  | Image registry for COSI sidecar                                            | Yes      | `gcr.io/`                                                                    |
+| `objectstorageProvisionerSidecar.image.repository` | Image repository for COSI sidecar                                          | Yes      | `k8s-staging-sig-storage/objectstorage-sidecar/objectstorage-sidecar@sha256` |
+| `objectstorageProvisionerSidecar.image.tag`        | Image tag for COSI sidecar                                                 | Yes      | `589c0ad4ef5d0855fe487440e634d01315bc3d883f91c44cb72577ea6e12c890`           |
+| `objectstorageProvisionerSidecar.image.pullPolicy` | Image pull policy for COSI sidecar                                         | Yes      | `Always`                                                                     |
 
 ### Configuration examples:
 
@@ -95,13 +95,13 @@ Install the driver in the `cosi-driver-nutanix` namespace (add the `--create-nam
 ### Steps to add the TLS certificates to the installation of COSI:
 In `values.yaml` file, 
 1. Set `tls.insecure` to `false`.
-2. Add the root CA certificate in the `tls.s3.rootCas` (for S3 endpoint) and `tls.pc.rootCas` (for Prism Central) in Base64 encoded format. Eg: `rootCas: "LS0tLS1CRUdJTiBDRVJUS...USUZJQ0FURS0tLS0tCg=="`
+2. Add the root CA certificate in the `tls.s3.rootCAs` (for S3 endpoint) and `tls.pc.rootCAs` (for Prism Central) in Base64 encoded format. Eg: `rootCAs: "LS0tLS1CRUdJTiBDRVJUS...USUZJQ0FURS0tLS0tCg=="`
 
-If using private k8s secret for storing certs, add the k8s secret name in the `tls.secretName` field. The secret should be in the same namespace as the driver pod. Secret can be created in this way:
+If using private k8s secret for storing certs, add the k8s secret name in the `tls.caSecretName` field. The secret should be in the same namespace as the driver pod. Secret can be created in this way:
 ```console
 kubectl create secret generic cacert --from-file=S3_CA_CERT=s3_cert.pem --from-file=PC_CA_CERT=pc_cert.crt -n cosi-driver-nutanix
 ```
-Then add the secret name ("cacert") in `values.yaml` `tls.secretName` field.
+Then add the secret name ("cacert") in `values.yaml` `tls.caSecretName` field.
 
 ### Steps to update the Nutanix Object store details while installing COSI:
 1. Open Prism Central UI in any browser and go the objects page. In the below screenshot, already an object store called `cosi` is deployed which is ready for use. On the right side of the object store, you will see the objects Public IPs which you can use as the endpoint in the format: `http:<objects public ip>:80`.

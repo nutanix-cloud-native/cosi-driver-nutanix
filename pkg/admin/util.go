@@ -46,7 +46,7 @@ type API struct {
 }
 
 // New returns client for Nutanix object store
-func New(endpoint, accessKey, secretKey, pcEndpoint, pcUsername, pcPassword, accountName, caCert, insecure string, httpClient HTTPClient) (*API, error) {
+func New(endpoint, accessKey, secretKey, pcEndpoint, pcUsername, pcPassword, accountName, caCert string, insecure bool, httpClient HTTPClient) (*API, error) {
 	// validate endpoint
 	if endpoint == "" {
 		return nil, errNoEndpoint
@@ -84,11 +84,7 @@ func New(endpoint, accessKey, secretKey, pcEndpoint, pcUsername, pcPassword, acc
 
 	tlsConfig := TlsConfig{
 		CACert:   caCert,
-		Insecure: false,
-	}
-
-	if insecure == "true" {
-		tlsConfig.Insecure = true
+		Insecure: insecure,
 	}
 
 	transport, err := buildTransportTLS(tlsConfig)

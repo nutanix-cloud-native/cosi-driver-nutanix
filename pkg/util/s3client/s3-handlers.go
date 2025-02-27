@@ -48,16 +48,12 @@ type S3Agent struct {
 	Client *s3.S3
 }
 
-func NewS3Agent(accessKey, secretKey, endpoint, caCert, insecure string, debug bool) (*S3Agent, error) {
+func NewS3Agent(accessKey, secretKey, endpoint, caCert string, insecure, debug bool) (*S3Agent, error) {
 	const nutanixRegion = "us-east-1"
 
 	tlsConfig := TlsConfig{
 		CACert:   caCert,
-		Insecure: false,
-	}
-
-	if insecure == "true" {
-		tlsConfig.Insecure = true
+		Insecure: insecure,
 	}
 
 	if !tlsConfig.Insecure && strings.HasPrefix(endpoint, "http://") {

@@ -37,7 +37,7 @@ tls:
   insecure: false
   # If secretName is provided, value of rootCAs
   # will be ignored and taken from the secret.
-  secretName: ""
+  caSecretName: ""
 
 # COSI central controller specifications.
 cosiController:

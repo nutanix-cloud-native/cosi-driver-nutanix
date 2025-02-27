@@ -31,9 +31,9 @@ spec:
       - envFrom:
         - secretRef:
             name: objectstorage-provisioner
-        {{- if .Values.tls.secretName }}
+        {{- if .Values.tls.caSecretName }}
         - secretRef:
-            name: {{ .Values.tls.secretName }}
+            name: {{ .Values.tls.caSecretName }}
         {{- end }}
         image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}

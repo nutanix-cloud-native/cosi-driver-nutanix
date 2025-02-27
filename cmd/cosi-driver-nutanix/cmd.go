@@ -45,8 +45,8 @@ var (
 	PCSecret      = ""
 	AccountName   = ""
 	S3CACert      = ""
-	PcCACert      = ""
-	Insecure      = ""
+	PCCACert      = ""
+	Insecure      = false
 )
 
 var cmd = &cobra.Command{
@@ -72,6 +72,7 @@ func init() {
 	persistentFlags.AddGoFlagSet(kflags)
 
 	stringFlag := persistentFlags.StringVarP
+	boolFlag := persistentFlags.BoolVarP
 
 	stringFlag(&driverAddress,
 		"driver_address",
@@ -115,13 +116,13 @@ func init() {
 		S3CACert,
 		"S3 CA Certificate")
 
-	stringFlag(&PcCACert,
+	stringFlag(&PCCACert,
 		"pc_ca_cert",
 		"p",
-		PcCACert,
+		PCCACert,
 		"PC CA Certificate")
 
-	stringFlag(&Insecure,
+	boolFlag(&Insecure,
 		"insecure",
 		"i",
 		Insecure,
@@ -153,7 +154,7 @@ func run(ctx context.Context) error {
 		PCPassword,
 		AccountName,
 		S3CACert,
-		PcCACert,
+		PCCACert,
 		Insecure)
 	if err != nil {
 		return err
