@@ -5,7 +5,7 @@ metadata:
 {{ include "cosi-driver-nutanix.resource.annotations" . | indent 4 }}
   labels:
 {{ include "cosi-driver-nutanix.resource.labels" . | indent 4 }}
-  name: objectstorage-provisioner-role
+  name: {{ include "cosi-driver-nutanix.name" . }}
 rules:
   - apiGroups:
       - objectstorage.k8s.io
@@ -56,12 +56,12 @@ metadata:
 {{ include "cosi-driver-nutanix.resource.annotations" . | indent 4 }}
   labels:
 {{ include "cosi-driver-nutanix.resource.labels" . | indent 4 }}
-  name: objectstorage-provisioner-role-binding
+  name: {{ include "cosi-driver-nutanix.name" . }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: objectstorage-provisioner-role
+  name: {{ include "cosi-driver-nutanix.name" . }}
 subjects:
 - kind: ServiceAccount
-  name: objectstorage-provisioner-sa
+  name: {{ include "cosi-driver-nutanix.name" . }}
   namespace: {{ .Release.Namespace }}
