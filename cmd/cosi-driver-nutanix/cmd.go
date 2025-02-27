@@ -46,7 +46,8 @@ var (
 	AccountName   = ""
 	S3CACert      = ""
 	PCCACert      = ""
-	Insecure      = false
+	S3Insecure    = false
+	PCInsecure    = false
 )
 
 var cmd = &cobra.Command{
@@ -122,11 +123,17 @@ func init() {
 		PCCACert,
 		"PC CA Certificate")
 
-	boolFlag(&Insecure,
-		"insecure",
+	boolFlag(&S3Insecure,
+		"s3_insecure",
 		"i",
-		Insecure,
-		"Controls whether certificate chain will be validated")
+		S3Insecure,
+		"Controls whether certificate chain will be validated for objectstore endpoint")
+
+	boolFlag(&PCInsecure,
+		"pc_insecure",
+		"r",
+		PCInsecure,
+		"Controls whether certificate chain will be validated for Prism Central endpoint")
 
 	viper.BindPFlags(cmd.PersistentFlags())
 	cmd.PersistentFlags().VisitAll(func(f *pflag.Flag) {
@@ -155,7 +162,8 @@ func run(ctx context.Context) error {
 		AccountName,
 		S3CACert,
 		PCCACert,
-		Insecure)
+		S3Insecure,
+		PCInsecure)
 	if err != nil {
 		return err
 	}

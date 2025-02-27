@@ -18,6 +18,7 @@ package driver
 
 import (
 	"context"
+	"fmt"
 
 	ntnxIam "github.com/nutanix-core/k8s-ntnx-object-cosi/pkg/admin"
 	"github.com/nutanix-core/k8s-ntnx-object-cosi/pkg/util/s3client"
@@ -25,16 +26,18 @@ import (
 )
 
 func NewDriver(ctx context.Context, provisioner, ntnxEndpoint, accessKey, secretKey,
-	pcEndpoint, pcUsername, pcPassword, accountName, s3CaCert, pcCaCert string, insecure bool) (*IdentityServer, *ProvisionerServer, error) {
+	pcEndpoint, pcUsername, pcPassword, accountName, s3CaCert, pcCaCert string, s3Insecure, pcInsecure bool) (*IdentityServer, *ProvisionerServer, error) {
 
-	s3Client, err := s3client.NewS3Agent(accessKey, secretKey, ntnxEndpoint, s3CaCert, insecure, true)
+	s3Client, err := s3client.NewS3Agent(accessKey, secretKey, ntnxEndpoint, s3CaCert, s3Insecure, true)
 	if err != nil {
-		klog.Fatalln(err)
+		errMsg := fmt.Errorf("failed to create S3 client: %w", err)
+		klog.Fatalln(errMsg)
 	}
 
-	ntnxIamClient, err := ntnxIam.New(ntnxEndpoint, accessKey, secretKey, pcEndpoint, pcUsername, pcPassword, accountName, pcCaCert, insecure, nil)
+	ntnxIamClient, err := ntnxIam.New(ntnxEndpoint, accessKey, secretKey, pcEndpoint, pcUsername, pcPassword, accountName, pcCaCert, pcInsecure, nil)
 	if err != nil {
-		klog.Fatalln(err)
+		errMsg := fmt.Errorf("failed to create IAM client: %w", err)
+		klog.Fatalln(errMsg)
 	}
 	return &IdentityServer{
 			provisioner: provisioner,
