@@ -52,7 +52,7 @@ func NewS3Agent(accessKey, secretKey, endpoint, caCert string, insecure, debug b
 	}
 
 	if !tlsConfig.Insecure && strings.HasPrefix(endpoint, "http://") {
-		return nil, fmt.Errorf("'http' endpoint cannot be secure")
+		return nil, fmt.Errorf("'http' endpoint cannot be secure. Use an `https` endpoint or use insecure connection")
 	}
 
 	logLevel := aws.LogOff

@@ -115,25 +115,25 @@ func init() {
 		"s3_ca_cert",
 		"c",
 		S3CACert,
-		"S3 CA Certificate")
+		"S3 CA Certificate in base64 format")
 
 	stringFlag(&PCCACert,
 		"pc_ca_cert",
 		"p",
 		PCCACert,
-		"PC CA Certificate")
+		"PC CA Certificate in base64 format")
 
 	boolFlag(&S3Insecure,
 		"s3_insecure",
 		"i",
 		S3Insecure,
-		"Controls whether certificate chain will be validated for objectstore endpoint")
+		"Controls whether certificate chain will be validated for objectstore endpoint (true/false)")
 
 	boolFlag(&PCInsecure,
 		"pc_insecure",
 		"r",
 		PCInsecure,
-		"Controls whether certificate chain will be validated for Prism Central endpoint")
+		"Controls whether certificate chain will be validated for Prism Central endpoint (true/false)")
 
 	viper.BindPFlags(cmd.PersistentFlags())
 	cmd.PersistentFlags().VisitAll(func(f *pflag.Flag) {
