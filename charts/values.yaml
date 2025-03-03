@@ -13,7 +13,7 @@ image:
 # Secret used by the cosi-driver-nutanix sidecar for objects management.
 secret:
   enabled: true
-  # Nutanix Object Store instance endpoint, eg. "http://10.51.142.82:".
+  # Nutanix Object Store instance endpoint, eg. "http://10.51.142.82:80".
   endpoint: ""
   # Admin IAM Access key to be used for Nutanix Objects.
   access_key: ""

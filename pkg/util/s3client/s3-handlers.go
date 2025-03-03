@@ -18,13 +18,12 @@ package s3client
 
 import (
 	"bytes"
-	"crypto/tls"
-	"crypto/x509"
-	"encoding/base64"
 	"fmt"
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/nutanix-core/k8s-ntnx-object-cosi/pkg/util/transport"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
@@ -38,11 +37,6 @@ const (
 	ErrNoSuchBucket = "NoSuchBucket"
 )
 
-type TlsConfig struct {
-	CACert   string
-	Insecure bool
-}
-
 // S3Agent wraps the s3.S3 structure to allow for wrapper methods
 type S3Agent struct {
 	Client *s3.S3
@@ -51,9 +45,10 @@ type S3Agent struct {
 func NewS3Agent(accessKey, secretKey, endpoint, caCert string, insecure, debug bool) (*S3Agent, error) {
 	const nutanixRegion = "us-east-1"
 
-	tlsConfig := TlsConfig{
+	tlsConfig := transport.TlsConfig{
 		CACert:   caCert,
 		Insecure: insecure,
+		Endpoint: endpoint,
 	}
 
 	if !tlsConfig.Insecure && strings.HasPrefix(endpoint, "http://") {
@@ -65,7 +60,7 @@ func NewS3Agent(accessKey, secretKey, endpoint, caCert string, insecure, debug b
 		logLevel = aws.LogDebug
 	}
 
-	transport, err := buildTransportTLS(tlsConfig)
+	transport, err := transport.BuildTransportTLS(tlsConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -196,48 +191,4 @@ func (s *S3Agent) DeleteObjectInBucket(bucketname string, key string) (bool, err
 
 	}
 	return true, nil
-}
-
-func buildTransportTLS(tlsConfig TlsConfig) (*http.Transport, error) {
-	var transport *http.Transport
-
-	if tlsConfig.Insecure {
-		transport = &http.Transport{
-			TLSClientConfig: &tls.Config{
-				InsecureSkipVerify: true,
-			},
-		}
-
-		klog.InfoS("insecure connection to objectstore applied.", "insecure", tlsConfig.Insecure)
-	} else {
-		var rootCAs []byte
-		if strings.Contains(tlsConfig.CACert, "-----BEGIN CERTIFICATE-----") && strings.Contains(tlsConfig.CACert, "-----END CERTIFICATE-----") {
-			rootCAs = []byte(tlsConfig.CACert)
-		} else {
-			// Decode base64 CA cert
-			_rootCAs, err := base64.StdEncoding.DecodeString(tlsConfig.CACert)
-			if err != nil {
-				return nil, fmt.Errorf("failed to decode CA cert: %v", err)
-			}
-
-			rootCAs = _rootCAs
-		}
-		
-		// Create cert pool and add our CA
-		caCertPool := x509.NewCertPool()
-		if !caCertPool.AppendCertsFromPEM(rootCAs) {
-			return nil, fmt.Errorf("failed to append CA cert")
-		}
-
-		transport = &http.Transport{
-			TLSClientConfig: &tls.Config{
-				RootCAs:            caCertPool,
-				InsecureSkipVerify: false,
-			},
-		}
-
-		klog.InfoS("secure connection to objectstore applied.", "insecure", tlsConfig.Insecure)
-	}
-
-	return transport, nil
 }

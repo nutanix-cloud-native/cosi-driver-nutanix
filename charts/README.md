@@ -104,6 +104,9 @@ kubectl create secret generic cacert --from-file=S3_CA_CERT=s3_cert.pem --from-f
 ```
 Then add the secret name ("cacert") in `values.yaml` `tls.caSecretName` field.
 
+**NOTE**: Certificates should be in `PEM` encoded format.
+
+
 ### Steps to update the Nutanix Object store details while installing COSI:
 1. Open Prism Central UI in any browser and go the objects page. In the below screenshot, already an object store called `cosi` is deployed which is ready for use. On the right side of the object store, you will see the objects Public IPs which you can use as the endpoint in the format: `http:<objects public ip>:80`.
 <img width="1512" alt="Screenshot 2023-08-10 at 4 31 41 PM" src="https://github.com/nutanix-cloud-native/cosi-driver-nutanix/assets/44068648/ee0d9ef9-5c5a-4a5a-a0c0-ef2d76db118c">

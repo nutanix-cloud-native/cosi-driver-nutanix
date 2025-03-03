@@ -48,6 +48,8 @@ $ cd cosi-driver-nutanix
 - `S3_CA_CERT` (Optional) : Base64 encoded content of the root certificate authority file for S3 endpoint (Default: "")
 - `PC_CA_CERT` (Optional) : Base64 encoded content of the root certificate authority file for Prism Central (Default: "")
 
+**NOTE**: Certificates should be in `PEM` encoded format.
+
 **Pre-requisites:**
 Already deployed Nutanix object-store
 

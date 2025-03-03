@@ -1,9 +1,6 @@
 package admin
 
 import (
-	"crypto/tls"
-	"crypto/x509"
-	"encoding/base64"
 	"errors"
 	"fmt"
 	"net"
@@ -11,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"k8s.io/klog/v2"
+	"github.com/nutanix-core/k8s-ntnx-object-cosi/pkg/util/transport"
 )
 
 var (
@@ -22,11 +19,6 @@ var (
 	errNoPCUsername = errors.New("Prism Central username for IAM user management not set")
 	errNoPCPassword = errors.New("Prism Central password for IAM user management not set")
 )
-
-type TlsConfig struct {
-	CACert   string
-	Insecure bool
-}
 
 // HTTPClient interface that conforms to that of the http package's Client.
 type HTTPClient interface {
@@ -82,12 +74,13 @@ func New(endpoint, accessKey, secretKey, pcEndpoint, pcUsername, pcPassword, acc
 		accountName = "ntnx-cosi-iam-user"
 	}
 
-	tlsConfig := TlsConfig{
+	tlsConfig := transport.TlsConfig{
 		CACert:   caCert,
 		Insecure: insecure,
+		Endpoint: pcEndpoint,
 	}
 
-	transport, err := buildTransportTLS(tlsConfig)
+	transport, err := transport.BuildTransportTLS(tlsConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -137,48 +130,4 @@ func ValidateEndpoint(endpoint string) error {
 	}
 
 	return nil
-}
-
-func buildTransportTLS(tlsConfig TlsConfig) (*http.Transport, error) {
-	var transport *http.Transport
-
-	if tlsConfig.Insecure {
-		transport = &http.Transport{
-			TLSClientConfig: &tls.Config{
-				InsecureSkipVerify: true,
-			},
-		}
-
-		klog.InfoS("insecure connection to prism central applied.", "insecure", tlsConfig.Insecure)
-	} else {
-		var rootCAs []byte
-		if strings.Contains(tlsConfig.CACert, "-----BEGIN CERTIFICATE-----") && strings.Contains(tlsConfig.CACert, "-----END CERTIFICATE-----") {
-			rootCAs = []byte(tlsConfig.CACert)
-		} else {
-			// Decode base64 CA cert
-			_rootCAs, err := base64.StdEncoding.DecodeString(tlsConfig.CACert)
-			if err != nil {
-				return nil, fmt.Errorf("failed to decode CA cert: %v", err)
-			}
-
-			rootCAs = _rootCAs
-		}
-
-		// Create cert pool and add our CA
-		caCertPool := x509.NewCertPool()
-		if !caCertPool.AppendCertsFromPEM(rootCAs) {
-			return nil, fmt.Errorf("failed to append CA cert")
-		}
-
-		transport = &http.Transport{
-			TLSClientConfig: &tls.Config{
-				RootCAs:            caCertPool,
-				InsecureSkipVerify: false,
-			},
-		}
-
-		klog.InfoS("secure connection to prism central applied.", "insecure", tlsConfig.Insecure)
-	}
-
-	return transport, nil
 }

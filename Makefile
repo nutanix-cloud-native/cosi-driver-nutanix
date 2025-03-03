@@ -17,7 +17,7 @@ CMDS=cosi-driver-nutanix
 REGISTRY_NAME=ghcr.io/nutanix-cloud-native/cosi-driver-nutanix
 IMAGE_TAG=latest
 
-LOCAL_REGISTRY_NAME=cosi-driver-nutanix
+LOCAL_IMAGE_NAME=cosi-driver-nutanix
 LOCAL_IMAGE_TAG=debug
 
 all: build
@@ -56,5 +56,5 @@ clean:
 
 # Creates an image of the driver in local environment
 local-%: build-%
-	docker build -t $(LOCAL_REGISTRY_NAME):$(LOCAL_IMAGE_TAG) -f package/docker/Dockerfile --label revision=$(REV) .
+	docker build -t $(LOCAL_IMAGE_NAME):$(LOCAL_IMAGE_TAG) -f package/docker/Dockerfile --label revision=$(REV) .
 local: $(CMDS:%=local-%)
