@@ -54,7 +54,7 @@ const (
 	GetObjectVersionTorrent        action = "s3:GetObjectVersionTorrent"
 	GetReplicationConfiguration    action = "s3:GetReplicationConfiguration"
 	ListAllMyBuckets               action = "s3:ListAllMyBuckets"
-	ListBucketMultiPartUploads     action = "s3:ListBucketMultiPartUploads"
+	ListBucketMultipartUploads     action = "s3:ListBucketMultipartUploads"
 	ListBucket                     action = "s3:ListBucket"
 	ListBucketVersions             action = "s3:ListBucketVersions"
 	ListMultipartUploadParts       action = "s3:ListMultipartUploadParts"
@@ -77,10 +77,12 @@ const (
 )
 
 var AllowedActions = []action{
+	AbortMultipartUpload,
 	DeleteObject,
 	GetBucketLocation,
 	GetObject,
 	ListBucket,
+	ListBucketMultipartUploads,
 	ListMultipartUploadParts,
 	PutObject,
 	PutLifecycleConfiguration,
