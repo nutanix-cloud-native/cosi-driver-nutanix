@@ -95,7 +95,7 @@ Install the driver in the `cosi-driver-nutanix` namespace (add the `--create-nam
 
 ### Steps to add the TLS certificates to the installation of COSI:
 In `values.yaml` file, 
-1. Set `tls.insecure` to `false`.
+1. Ensure `tls.s3.insecure` and `tls.pc.insecure` are set to `false`.
 2. Add the root CA certificate in the `tls.s3.rootCAs` (for S3 endpoint) and `tls.pc.rootCAs` (for Prism Central) in Base64 encoded format. Eg: `rootCAs: "LS0tLS1CRUdJTiBDRVJUS...USUZJQ0FURS0tLS0tCg=="`
 
 If using private k8s secret for storing certs, add the k8s secret name in the `tls.caSecretName` field. The secret should be in the same namespace as the driver pod. Secret can be created in this way:
