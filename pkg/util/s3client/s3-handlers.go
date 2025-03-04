@@ -23,6 +23,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/nutanix-core/k8s-ntnx-object-cosi/pkg/util/transport"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/credentials"
@@ -31,18 +33,42 @@ import (
 	"k8s.io/klog/v2"
 )
 
+const (
+	ErrNoSuchBucket = "NoSuchBucket"
+)
+
 // S3Agent wraps the s3.S3 structure to allow for wrapper methods
 type S3Agent struct {
 	Client *s3.S3
 }
 
-func NewS3Agent(accessKey, secretKey, endpoint string, debug bool) (*S3Agent, error) {
+func NewS3Agent(accessKey, secretKey, endpoint, caCert string, insecure, debug bool) (*S3Agent, error) {
 	const nutanixRegion = "us-east-1"
+
+	tlsConfig := transport.TlsConfig{
+		CACert:   caCert,
+		Insecure: insecure,
+		Endpoint: endpoint,
+	}
+
+	if !tlsConfig.Insecure && strings.HasPrefix(endpoint, "http://") {
+		return nil, fmt.Errorf("'http' endpoint cannot be secure. Use an `https` endpoint or use insecure connection")
+	}
 
 	logLevel := aws.LogOff
 	if debug {
 		logLevel = aws.LogDebug
 	}
+
+	transport, err := transport.BuildTransportTLS(tlsConfig)
+	if err != nil {
+		return nil, err
+	}
+	client := &http.Client{
+		Timeout:   time.Second * 15,
+		Transport: transport,
+	}
+
 	sess, err := session.NewSession(
 		aws.NewConfig().
 			WithRegion(nutanixRegion).
@@ -50,10 +76,8 @@ func NewS3Agent(accessKey, secretKey, endpoint string, debug bool) (*S3Agent, er
 			WithEndpoint(endpoint).
 			WithS3ForcePathStyle(true).
 			WithMaxRetries(5).
-			WithDisableSSL(true).
-			WithHTTPClient(&http.Client{
-				Timeout: time.Second * 15,
-			}).
+			WithDisableSSL(tlsConfig.Insecure).
+			WithHTTPClient(client).
 			WithLogLevel(logLevel),
 	)
 	if err != nil {

@@ -36,7 +36,7 @@ spec:
       - name: socket
         emptyDir: {}
       containers:
-      - name: ntnx-system
+      - name: objectstorage-provisioner
         image: $(NTNX_IMAGE_ORG)/cosi-driver-nutanix:$(NTNX_IMAGE_VERSION)
         imagePullPolicy: IfNotPresent
         envFrom:
@@ -46,7 +46,7 @@ spec:
         - mountPath: /var/lib/cosi
           name: socket
       - name: objectstorage-provisioner-sidecar
-        image: k8s-staging-sig-storage/objectstorage-sidecar/objectstorage-sidecar:v20221117-v0.1.0-22-g0e67387
+        image: gcr.io/k8s-staging-sig-storage/objectstorage-sidecar/objectstorage-sidecar:v20221117-v0.1.0-22-g0e67387
         imagePullPolicy: Always
         args:
         - "--v=5"

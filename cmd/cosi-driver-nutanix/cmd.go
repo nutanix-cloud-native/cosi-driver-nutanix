@@ -44,6 +44,10 @@ var (
 	PCPassword    = ""
 	PCSecret      = ""
 	AccountName   = ""
+	S3CACert      = ""
+	PCCACert      = ""
+	S3Insecure    = false
+	PCInsecure    = false
 )
 
 var cmd = &cobra.Command{
@@ -69,6 +73,7 @@ func init() {
 	persistentFlags.AddGoFlagSet(kflags)
 
 	stringFlag := persistentFlags.StringVarP
+	boolFlag := persistentFlags.BoolVarP
 
 	stringFlag(&driverAddress,
 		"driver_address",
@@ -106,6 +111,30 @@ func init() {
 		AccountName,
 		"User IAM Account Name is an identifier for Nutanix Objects")
 
+	stringFlag(&S3CACert,
+		"s3_ca_cert",
+		"c",
+		S3CACert,
+		"S3 CA Certificate in base64 format")
+
+	stringFlag(&PCCACert,
+		"pc_ca_cert",
+		"p",
+		PCCACert,
+		"PC CA Certificate in base64 format")
+
+	boolFlag(&S3Insecure,
+		"s3_insecure",
+		"i",
+		S3Insecure,
+		"Controls whether certificate chain will be validated for objectstore endpoint (true/false)")
+
+	boolFlag(&PCInsecure,
+		"pc_insecure",
+		"r",
+		PCInsecure,
+		"Controls whether certificate chain will be validated for Prism Central endpoint (true/false)")
+
 	viper.BindPFlags(cmd.PersistentFlags())
 	cmd.PersistentFlags().VisitAll(func(f *pflag.Flag) {
 		if viper.IsSet(f.Name) && viper.GetString(f.Name) != "" {
@@ -130,7 +159,11 @@ func run(ctx context.Context) error {
 		PCEndpoint,
 		PCUsername,
 		PCPassword,
-		AccountName)
+		AccountName,
+		S3CACert,
+		PCCACert,
+		S3Insecure,
+		PCInsecure)
 	if err != nil {
 		return err
 	}

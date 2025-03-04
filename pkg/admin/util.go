@@ -1,12 +1,14 @@
 package admin
 
 import (
-	"crypto/tls"
 	"errors"
 	"fmt"
 	"net"
 	"net/http"
 	"strings"
+	"time"
+
+	"github.com/nutanix-core/k8s-ntnx-object-cosi/pkg/util/transport"
 )
 
 var (
@@ -36,7 +38,7 @@ type API struct {
 }
 
 // New returns client for Nutanix object store
-func New(endpoint, accessKey, secretKey, pcEndpoint, pcUsername, pcPassword, accountName string, httpClient HTTPClient) (*API, error) {
+func New(endpoint, accessKey, secretKey, pcEndpoint, pcUsername, pcPassword, accountName, caCert string, insecure bool, httpClient HTTPClient) (*API, error) {
 	// validate endpoint
 	if endpoint == "" {
 		return nil, errNoEndpoint
@@ -72,13 +74,19 @@ func New(endpoint, accessKey, secretKey, pcEndpoint, pcUsername, pcPassword, acc
 		accountName = "ntnx-cosi-iam-user"
 	}
 
-	// If no client is passed initialize it
-	if httpClient == nil {
-		// SSL certificate verification turned off
-		tr := &http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-		}
-		httpClient = &http.Client{Transport: tr}
+	tlsConfig := transport.TlsConfig{
+		CACert:   caCert,
+		Insecure: insecure,
+		Endpoint: pcEndpoint,
+	}
+
+	transport, err := transport.BuildTransportTLS(tlsConfig)
+	if err != nil {
+		return nil, err
+	}
+	client := &http.Client{
+		Timeout:   time.Second * 15,
+		Transport: transport,
 	}
 
 	return &API{
@@ -89,7 +97,7 @@ func New(endpoint, accessKey, secretKey, pcEndpoint, pcUsername, pcPassword, acc
 		PCUsername:  pcUsername,
 		PCPassword:  pcPassword,
 		AccountName: accountName,
-		HTTPClient:  httpClient,
+		HTTPClient:  client,
 	}, nil
 }
 
