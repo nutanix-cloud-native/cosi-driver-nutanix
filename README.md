@@ -41,7 +41,8 @@ $ cd cosi-driver-nutanix
 - `ENDPOINT` : Nutanix Object Store Endpoint
 - `ACCESS_KEY` : Nutanix Object Store Access Key
 - `SECRET_KEY` : Nutanix Object Store Secret Key
-- `PC_SECRET` : Prism Central Credentials in the form 'prism-ip:prism-port:username:password'
+- `PC_ENDPOINT` : Prism Central endpoint'
+- `PC_SECRET` : Prism Central Credentials in the form 'username:password'
 - `S3_INSECURE` : Controls whether certificate chain will be validated for S3 endpoint (Default: "false")
 - `PC_INSECURE` : Controls whether certificate chain will be validated for Prism Central (Default: "false")
 - `ACCOUNT_NAME` (Optional) : DisplayName identifier prefix for Nutanix Object Store (Default_Prefix: ntnx-cosi-iam-user)
@@ -168,9 +169,11 @@ Update the `objectstorage-provisioner` secret that is used by the running provis
   ACCESS_KEY: ""
   # Admin IAM Secret key to be used for Nutanix Objects
   SECRET_KEY: ""
-  # PC Credentials in format <prism-ip>:<prism-port>:<user>:<password>. 
-  # eg. "<ip>:<port>:user:password"
-  PC_SECRET: ""
+  # Prism Central endpoint, eg. "https://10.51.149.82:9440"
+  PC_ENDPOINT: "<ENDPOINT>"
+  # PC Credentials in format <user>:<password>. 
+  # eg. "user:password"
+  PC_SECRET: "<USER>:<PASSWORD>"
   # Controls whether certificate chain will be validated for S3 endpoint
   # If INSECURE is set to true, an insecure connection will be made with
   # the S3 endpoint (Certs will not be used)
@@ -221,3 +224,41 @@ $ make REGISTRY_NAME=SampleRegistryUsername/cosi-driver-nutanix IMAGE_TAG=latest
 ```
 
 Your custom image `SampleRegistry/cosi-driver-nutanix:latest` is now ready to be used.
+
+## Running Tests
+### Unit Tests
+Execute the following to run unit tests:
+```sh
+go test ./...
+```
+To generate the coverage report and an HTML page to view the report:
+```sh
+go test -coverprofile=coverage.out ./...
+go tool cover -html=coverage.out -o coverage.html
+```
+Open the HTML file in any web vrowser to view the coverage of each file.
+
+### E2E Tests
+Execute the following to run E2E tests:
+```sh
+sh scripts/setup_test_env.sh [flags]
+```
+```
+Options:
+-o, --oss_endpoint ENDPOINT    Nutanix Object Store instance endpoint, eg. "http://10.51.142.82:80".
+-i, --pc_endpoint ENDPOINT     Prism Central endpoint, eg. "https://10.51.142.82:9440".
+-u, --pc_user USERNAME         Prism Central username. [default = admin]
+-p, --pc_pass PASSWORD         Prism Central password.
+-a, --access_key KEY           Admin IAM Access key to be used for Nutanix Objects.
+-s, --secret_key KEY           Admin IAM Secret key to be used for Nutanix Objects.
+-n, --namespace NAMESAPCE      Cluster namespace for the COSI deployment [default = cosi]
+```
+You can also run the E2E tests on Triton in a local environment if a real cluster is not available.
+To run on Triton, you need the image [http://uranus.corp.nutanix.com/~ankush.patanwal/objects-triton.tar.gz] and k8s cluster running locally (eg. `minikube`) then execute the script with flag `-t` or `--use_triton`.
+```sh
+sh scripts/setup_test_env.sh -t
+```
+NOTE: You will need to load the Triton image to the local cluster. In `minikube` this can be done using:
+```sh
+minikube image load objects-triton:debug
+```

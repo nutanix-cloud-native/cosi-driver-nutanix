@@ -99,11 +99,17 @@ func init() {
 		SecretKey,
 		"Admin IAM Secret key to be used for Nutanix Objects")
 
+	stringFlag(&PCEndpoint,
+		"pc_endpoint",
+		"t",
+		PCEndpoint,
+		"Prism Central Endpoint, eg: https://10.56.192.122:9440")
+		
 	stringFlag(&PCSecret,
 		"pc_secret",
 		"k",
 		PCSecret,
-		"Prism Central Credentials in the format <prism-ip>:<prism-port>:<pc_user>:<pc_password>")
+		"Prism Central Credentials in the format <pc_user>:<pc_password>")
 
 	stringFlag(&AccountName,
 		"account_name",
@@ -144,10 +150,16 @@ func init() {
 }
 
 func run(ctx context.Context) error {
-	PCEndpoint, PCUsername, PCPassword, err := ntnxIam.GetCredsFromPCSecret(PCSecret)
+	PCUsername, PCPassword, err := ntnxIam.GetCredsFromPCSecret(PCSecret)
 	if err != nil {
 		errMsg := fmt.Errorf("failed to extract PC credential information from secret: %w", err)
 		klog.Error(errMsg)
+		return err
+	}
+
+	err = ntnxIam.ValidateEndpoint(PCEndpoint)
+	if err != nil {
+		klog.Error(fmt.Errorf("failed to validate PC endpoint: %w", err))
 		return err
 	}
 
