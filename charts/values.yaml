@@ -19,9 +19,9 @@ secret:
   access_key: ""
   # Admin IAM Secret key to be used for Nutanix Objects.
   secret_key: ""
+  # Prism Central endpoint, eg. "https://10.51.149.82:9440"
+  pc_endpoint: ""
   # PC Credentials.
-  pc_ip: ""
-  pc_port: "9440"
   pc_username: "admin"
   pc_password: ""
   # Account Name is a displayName identifier Prefix for Nutanix.

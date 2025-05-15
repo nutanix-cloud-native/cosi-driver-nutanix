@@ -8,7 +8,6 @@ metadata:
   name: objectstorage-provisioner
   namespace: {{ .Release.Namespace }}
 spec:
-  minReadySeconds: 30
   progressDeadlineSeconds: 600
   replicas: {{ .Values.replicas }}
   revisionHistoryLimit: 3

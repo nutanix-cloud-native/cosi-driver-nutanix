@@ -37,9 +37,26 @@ const (
 	ErrNoSuchBucket = "NoSuchBucket"
 )
 
+type S3iface interface {
+	CreateBucket(name string) error
+	DeleteBucket(name string) (bool, error)
+	GetBucketPolicy(bucket string) (*BucketPolicy, error)
+	PutBucketPolicy(bucket string, policy BucketPolicy) (*s3.PutBucketPolicyOutput, error)
+}
+
+type S3client interface {
+	CreateBucket(input *s3.CreateBucketInput) (*s3.CreateBucketOutput, error)
+	DeleteBucket(input *s3.DeleteBucketInput) (*s3.DeleteBucketOutput, error)
+	DeleteObject(input *s3.DeleteObjectInput) (*s3.DeleteObjectOutput, error)
+	PutObject(input *s3.PutObjectInput) (*s3.PutObjectOutput, error)
+	GetObject(input *s3.GetObjectInput) (*s3.GetObjectOutput, error)
+	GetBucketPolicy(input *s3.GetBucketPolicyInput) (*s3.GetBucketPolicyOutput, error)
+	PutBucketPolicy(input *s3.PutBucketPolicyInput) (*s3.PutBucketPolicyOutput, error)
+}
+
 // S3Agent wraps the s3.S3 structure to allow for wrapper methods
 type S3Agent struct {
-	Client *s3.S3
+	Client S3client
 }
 
 func NewS3Agent(accessKey, secretKey, endpoint, caCert string, insecure, debug bool) (*S3Agent, error) {
@@ -91,10 +108,6 @@ func NewS3Agent(accessKey, secretKey, endpoint, caCert string, insecure, debug b
 
 // CreateBucket creates a bucket with the given name
 func (s *S3Agent) CreateBucket(name string) error {
-	return s.createBucket(name)
-}
-
-func (s *S3Agent) createBucket(name string) error {
 
 	klog.InfoS("Creating bucket", "name", name)
 	bucketInput := &s3.CreateBucketInput{
@@ -126,9 +139,15 @@ func (s *S3Agent) DeleteBucket(name string) (bool, error) {
 		Bucket: aws.String(name),
 	})
 	if err != nil {
+		if aerr, ok := err.(awserr.Error); ok {
+			klog.InfoS("DEBUG: after s3 call", "ok", ok, "aerr", aerr)
+			if aerr.Code() == s3.ErrCodeNoSuchBucket {
+				klog.InfoS("Bucket does not exist", "name", name)
+				return true, nil
+			}
+		}
 		klog.ErrorS(err, "failed to delete bucket")
 		return false, err
-
 	}
 	return true, nil
 }

@@ -22,61 +22,61 @@ import (
 	"k8s.io/apimachinery/pkg/util/json"
 )
 
-type action string
+type Action string
 
 const (
-	All                            action = "s3:*"
-	AbortMultipartUpload           action = "s3:AbortMultipartUpload"
-	CreateBucket                   action = "s3:CreateBucket"
-	DeleteBucketPolicy             action = "s3:DeleteBucketPolicy"
-	DeleteBucket                   action = "s3:DeleteBucket"
-	DeleteBucketWebsite            action = "s3:DeleteBucketWebsite"
-	DeleteObject                   action = "s3:DeleteObject"
-	DeleteObjectVersion            action = "s3:DeleteObjectVersion"
-	DeleteReplicationConfiguration action = "s3:DeleteReplicationConfiguration"
-	GetAccelerateConfiguration     action = "s3:GetAccelerateConfiguration"
-	GetBucketAcl                   action = "s3:GetBucketAcl"
-	GetBucketCORS                  action = "s3:GetBucketCORS"
-	GetBucketLocation              action = "s3:GetBucketLocation"
-	GetBucketLogging               action = "s3:GetBucketLogging"
-	GetBucketNotification          action = "s3:GetBucketNotification"
-	GetBucketPolicy                action = "s3:GetBucketPolicy"
-	GetBucketRequestPayment        action = "s3:GetBucketRequestPayment"
-	GetBucketTagging               action = "s3:GetBucketTagging"
-	GetBucketVersioning            action = "s3:GetBucketVersioning"
-	GetBucketWebsite               action = "s3:GetBucketWebsite"
-	GetLifecycleConfiguration      action = "s3:GetLifecycleConfiguration"
-	GetObjectAcl                   action = "s3:GetObjectAcl"
-	GetObject                      action = "s3:GetObject"
-	GetObjectTorrent               action = "s3:GetObjectTorrent"
-	GetObjectVersionAcl            action = "s3:GetObjectVersionAcl"
-	GetObjectVersion               action = "s3:GetObjectVersion"
-	GetObjectVersionTorrent        action = "s3:GetObjectVersionTorrent"
-	GetReplicationConfiguration    action = "s3:GetReplicationConfiguration"
-	ListAllMyBuckets               action = "s3:ListAllMyBuckets"
-	ListBucketMultipartUploads     action = "s3:ListBucketMultipartUploads"
-	ListBucket                     action = "s3:ListBucket"
-	ListBucketVersions             action = "s3:ListBucketVersions"
-	ListMultipartUploadParts       action = "s3:ListMultipartUploadParts"
-	PutAccelerateConfiguration     action = "s3:PutAccelerateConfiguration"
-	PutBucketAcl                   action = "s3:PutBucketAcl"
-	PutBucketCORS                  action = "s3:PutBucketCORS"
-	PutBucketLogging               action = "s3:PutBucketLogging"
-	PutBucketNotification          action = "s3:PutBucketNotification"
-	PutBucketPolicy                action = "s3:PutBucketPolicy"
-	PutBucketRequestPayment        action = "s3:PutBucketRequestPayment"
-	PutBucketTagging               action = "s3:PutBucketTagging"
-	PutBucketVersioning            action = "s3:PutBucketVersioning"
-	PutBucketWebsite               action = "s3:PutBucketWebsite"
-	PutLifecycleConfiguration      action = "s3:PutLifecycleConfiguration"
-	PutObjectAcl                   action = "s3:PutObjectAcl"
-	PutObject                      action = "s3:PutObject"
-	PutObjectVersionAcl            action = "s3:PutObjectVersionAcl"
-	PutReplicationConfiguration    action = "s3:PutReplicationConfiguration"
-	RestoreObject                  action = "s3:RestoreObject"
+	All                            Action = "s3:*"
+	AbortMultipartUpload           Action = "s3:AbortMultipartUpload"
+	CreateBucket                   Action = "s3:CreateBucket"
+	DeleteBucketPolicy             Action = "s3:DeleteBucketPolicy"
+	DeleteBucket                   Action = "s3:DeleteBucket"
+	DeleteBucketWebsite            Action = "s3:DeleteBucketWebsite"
+	DeleteObject                   Action = "s3:DeleteObject"
+	DeleteObjectVersion            Action = "s3:DeleteObjectVersion"
+	DeleteReplicationConfiguration Action = "s3:DeleteReplicationConfiguration"
+	GetAccelerateConfiguration     Action = "s3:GetAccelerateConfiguration"
+	GetBucketAcl                   Action = "s3:GetBucketAcl"
+	GetBucketCORS                  Action = "s3:GetBucketCORS"
+	GetBucketLocation              Action = "s3:GetBucketLocation"
+	GetBucketLogging               Action = "s3:GetBucketLogging"
+	GetBucketNotification          Action = "s3:GetBucketNotification"
+	GetBucketPolicy                Action = "s3:GetBucketPolicy"
+	GetBucketRequestPayment        Action = "s3:GetBucketRequestPayment"
+	GetBucketTagging               Action = "s3:GetBucketTagging"
+	GetBucketVersioning            Action = "s3:GetBucketVersioning"
+	GetBucketWebsite               Action = "s3:GetBucketWebsite"
+	GetLifecycleConfiguration      Action = "s3:GetLifecycleConfiguration"
+	GetObjectAcl                   Action = "s3:GetObjectAcl"
+	GetObject                      Action = "s3:GetObject"
+	GetObjectTorrent               Action = "s3:GetObjectTorrent"
+	GetObjectVersionAcl            Action = "s3:GetObjectVersionAcl"
+	GetObjectVersion               Action = "s3:GetObjectVersion"
+	GetObjectVersionTorrent        Action = "s3:GetObjectVersionTorrent"
+	GetReplicationConfiguration    Action = "s3:GetReplicationConfiguration"
+	ListAllMyBuckets               Action = "s3:ListAllMyBuckets"
+	ListBucketMultipartUploads     Action = "s3:ListBucketMultipartUploads"
+	ListBucket                     Action = "s3:ListBucket"
+	ListBucketVersions             Action = "s3:ListBucketVersions"
+	ListMultipartUploadParts       Action = "s3:ListMultipartUploadParts"
+	PutAccelerateConfiguration     Action = "s3:PutAccelerateConfiguration"
+	PutBucketAcl                   Action = "s3:PutBucketAcl"
+	PutBucketCORS                  Action = "s3:PutBucketCORS"
+	PutBucketLogging               Action = "s3:PutBucketLogging"
+	PutBucketNotification          Action = "s3:PutBucketNotification"
+	PutBucketPolicy                Action = "s3:PutBucketPolicy"
+	PutBucketRequestPayment        Action = "s3:PutBucketRequestPayment"
+	PutBucketTagging               Action = "s3:PutBucketTagging"
+	PutBucketVersioning            Action = "s3:PutBucketVersioning"
+	PutBucketWebsite               Action = "s3:PutBucketWebsite"
+	PutLifecycleConfiguration      Action = "s3:PutLifecycleConfiguration"
+	PutObjectAcl                   Action = "s3:PutObjectAcl"
+	PutObject                      Action = "s3:PutObject"
+	PutObjectVersionAcl            Action = "s3:PutObjectVersionAcl"
+	PutReplicationConfiguration    Action = "s3:PutReplicationConfiguration"
+	RestoreObject                  Action = "s3:RestoreObject"
 )
 
-var AllowedActions = []action{
+var AllowedActions = []Action{
 	AbortMultipartUpload,
 	DeleteObject,
 	GetBucketLocation,
@@ -88,11 +88,11 @@ var AllowedActions = []action{
 	PutLifecycleConfiguration,
 }
 
-type effect string
+type Effect string
 
 // effectAllow values are expected by the S3 API to be 'Allow' explicitly
 const (
-	effectAllow effect = "Allow"
+	effectAllow Effect = "Allow"
 )
 
 // PolicyStatment is the Go representation of a PolicyStatement json struct
@@ -101,12 +101,12 @@ type PolicyStatement struct {
 	// Sid (optional) is the PolicyStatement's unique identifier
 	Sid string `json:"Sid"`
 	// Effect determines whether the Action(s) are 'Allow'ed
-	Effect effect `json:"Effect"`
+	Effect Effect `json:"Effect"`
 	// Principle is/are the nutanix user names affected by this PolicyStatement
 	// Must be in the format of '<username>'
 	Principal map[string][]string `json:"Principal"`
 	// Action is a list of s3:* actions
-	Action []action `json:"Action"`
+	Action []Action `json:"Action"`
 	// Resource is the ARN identifier for the S3 resource (bucket)
 	// Must be in the format of 'arn:aws:s3:::<bucket>'
 	Resource []string `json:"Resource"`
@@ -179,6 +179,7 @@ func (bp *BucketPolicy) ModifyBucketPolicy(ps ...PolicyStatement) *BucketPolicy 
 		for j, oldP := range bp.Statement {
 			if newP.Sid == oldP.Sid {
 				bp.Statement[j] = newP
+				match = true
 			}
 		}
 		if !match {
@@ -217,7 +218,7 @@ func NewPolicyStatement() *PolicyStatement {
 		Sid:       "",
 		Effect:    "",
 		Principal: map[string][]string{},
-		Action:    []action{},
+		Action:    []Action{},
 		Resource:  []string{},
 	}
 }
@@ -268,7 +269,7 @@ func (ps *PolicyStatement) Allows() *PolicyStatement {
 }
 
 // Actions is the set of "s3:*" actions for the PolicyStatement is concerned
-func (ps *PolicyStatement) Actions(actions ...action) *PolicyStatement {
+func (ps *PolicyStatement) Actions(actions ...Action) *PolicyStatement {
 	ps.Action = actions
 	return ps
 }
@@ -278,7 +279,7 @@ func (ps *PolicyStatement) EjectPrincipals(users ...string) {
 	for _, u := range users {
 		for j, v := range principals {
 			if u == v {
-				principals = append(principals[:j], principals[:j+1]...)
+				principals = append(principals[:j], principals[j+1:]...)
 			}
 		}
 	}
