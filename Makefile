@@ -39,7 +39,7 @@ REV=$(shell git describe --long --tags --match='v*' --dirty 2>/dev/null || git r
 
 build-%:
 	mkdir -p bin
-	CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-X main.version=$(REV) -extldflags "-static"' -o ./bin/$* ./cmd/$*
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -ldflags '-X main.version=$(REV) -extldflags "-static"' -o ./bin/$* ./cmd/$*
 
 container-%: build-%
 	docker build -t $(REGISTRY_NAME):$(IMAGE_TAG) -f package/docker/Dockerfile --label revision=$(REV) .
