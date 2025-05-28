@@ -28,18 +28,18 @@ import (
 )
 
 type IdentityServer struct {
-	provisioner string
+	Provisioner string
 }
 
 func (id *IdentityServer) DriverGetInfo(ctx context.Context,
 	req *cosi.DriverGetInfoRequest) (*cosi.DriverGetInfoResponse, error) {
 
-	if id.provisioner == "" {
+	if id.Provisioner == "" {
 		klog.ErrorS(fmt.Errorf("provisioner name cannot be empty"), "Invalid argument")
 		return nil, status.Error(codes.InvalidArgument, "Provisioner name is empty")
 	}
 
 	return &cosi.DriverGetInfoResponse{
-		Name: id.provisioner,
+		Name: id.Provisioner,
 	}, nil
 }

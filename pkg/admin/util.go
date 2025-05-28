@@ -1,10 +1,11 @@
 package admin
 
 import (
+	"context"
 	"errors"
 	"fmt"
-	"net"
 	"net/http"
+	"net/url"
 	"strings"
 	"time"
 
@@ -12,17 +13,24 @@ import (
 )
 
 var (
-	errNoEndpoint   = errors.New("Nutanix object store instance endpoint not set")
-	errNoAccessKey  = errors.New("Admin IAM access key for Nutanix Objects not set")
-	errNoSecretKey  = errors.New("Admin IAM secret key for Nutanix Objects not set")
-	errNoPCEndpoint = errors.New("Prism Central endpoint for IAM user management not set")
-	errNoPCUsername = errors.New("Prism Central username for IAM user management not set")
-	errNoPCPassword = errors.New("Prism Central password for IAM user management not set")
+	ErrNoEndpoint   = errors.New("Nutanix object store instance endpoint not set")
+	ErrNoAccessKey  = errors.New("Admin IAM access key for Nutanix Objects not set")
+	ErrNoSecretKey  = errors.New("Admin IAM secret key for Nutanix Objects not set")
+	ErrNoPCEndpoint = errors.New("Prism Central endpoint for IAM user management not set")
+	ErrNoPCUsername = errors.New("Prism Central username for IAM user management not set")
+	ErrNoPCPassword = errors.New("Prism Central password for IAM user management not set")
 )
 
 // HTTPClient interface that conforms to that of the http package's Client.
 type HTTPClient interface {
 	Do(req *http.Request) (*http.Response, error)
+}
+
+type IAMiface interface {
+	CreateUser(ctx context.Context, username string, display_name string) (NutanixUserResp, error)
+	RemoveUser(ctx context.Context, uuid string) error
+	GetAccountName() string
+	GetEndpoint() string
 }
 
 // API struct for New Client
@@ -41,32 +49,32 @@ type API struct {
 func New(endpoint, accessKey, secretKey, pcEndpoint, pcUsername, pcPassword, accountName, caCert string, insecure bool, httpClient HTTPClient) (*API, error) {
 	// validate endpoint
 	if endpoint == "" {
-		return nil, errNoEndpoint
+		return nil, ErrNoEndpoint
 	}
 
 	// validate access key
 	if accessKey == "" {
-		return nil, errNoAccessKey
+		return nil, ErrNoAccessKey
 	}
 
 	// validate secret key
 	if secretKey == "" {
-		return nil, errNoSecretKey
+		return nil, ErrNoSecretKey
 	}
 
 	// validate pc endpoint
 	if pcEndpoint == "" {
-		return nil, errNoPCEndpoint
+		return nil, ErrNoPCEndpoint
 	}
 
 	// validate pc username
 	if pcUsername == "" {
-		return nil, errNoPCUsername
+		return nil, ErrNoPCUsername
 	}
 
 	// validate pc password
 	if pcPassword == "" {
-		return nil, errNoPCPassword
+		return nil, ErrNoPCPassword
 	}
 
 	// set default account_name when empty
@@ -101,33 +109,34 @@ func New(endpoint, accessKey, secretKey, pcEndpoint, pcUsername, pcPassword, acc
 	}, nil
 }
 
-func GetCredsFromPCSecret(key string) (string, string, string, error) {
+func GetCredsFromPCSecret(key string) (string, string, error) {
 
 	// Split using ":" as delimiter
-	creds := strings.SplitN(string(key), ":", 4)
-	if len(creds) != 4 {
-		return "", "", "", fmt.Errorf("missing information in secret value '<prism-ip>:<prism-port>:<pc_user>:<pc_password>'")
+	creds := strings.SplitN(string(key), ":", 2)
+	if len(creds) != 2 {
+		return "", "", fmt.Errorf("missing information in secret value '<pc_user>:<pc_password>'")
 	}
 
-	// Validate Prism Endpoint
-	err := ValidateEndpoint(creds[0])
-	if err != nil {
-		return "", "", "", err
-	}
-
-	return "https://" + creds[0] + ":" + creds[1], creds[2], creds[3], nil
+	return creds[0], creds[1], nil
 }
 
-// Validate endpoint is of form <ip or hostname>:<port>
+// Validate endpoint
 func ValidateEndpoint(endpoint string) error {
 	if len(endpoint) == 0 {
 		return fmt.Errorf("endpoint is not specified")
 	}
 
-	// epList[0] should be an IP v4 address
-	if _, err := net.ResolveIPAddr("ip", endpoint); err != nil {
+	if _, err := url.ParseRequestURI(endpoint); err != nil {
 		return fmt.Errorf("error while resolving endpoint %s, err: %s", endpoint, err)
 	}
 
 	return nil
+}
+
+func (api *API) GetAccountName() string {
+	return api.AccountName
+}
+
+func (api *API) GetEndpoint() string {
+	return api.Endpoint
 }

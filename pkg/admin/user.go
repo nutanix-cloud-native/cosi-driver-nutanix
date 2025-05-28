@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"time"
 )
@@ -90,25 +90,25 @@ func (api *API) CreateUser(ctx context.Context, username, display_name string) (
 	// Send Request
 	request, err := http.NewRequest("POST", url, bytes.NewBuffer(data))
 	if err != nil {
-		return result, fmt.Errorf("%w", err)
+		return result, fmt.Errorf("failed to create http request. %w", err)
 	}
 
 	request.SetBasicAuth(api.PCUsername, api.PCPassword)
 	request.Header.Add("Content-Type", "application/json")
 	resp, err := api.HTTPClient.Do(request)
 	if err != nil {
-		return result, fmt.Errorf("%w", err)
+		return result, fmt.Errorf("failed to send http request. %w", err)
 	}
 	defer resp.Body.Close()
 
-	// Check respsonse status
-	if resp.StatusCode != 200 {
-		return result, fmt.Errorf("%s", resp.Status)
-	}
-
-	decodedResponse, err := ioutil.ReadAll(resp.Body)
+	decodedResponse, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return result, fmt.Errorf("%w", err)
+	}
+
+	// Check respsonse status
+	if resp.StatusCode != 200 {
+		return result, fmt.Errorf("non-200 response: %d - %s", resp.StatusCode, string(decodedResponse))
 	}
 
 	// Unmarshal response into Go type
@@ -127,7 +127,7 @@ func (api *API) CreateUser(ctx context.Context, username, display_name string) (
 			return result, fmt.Errorf("%s. %s. %w", unmarshalError, string(decodedResponse), err)
 		}
 
-		return NutanixUserResp{}, fmt.Errorf("errorCode : %d, errorMessage : %s", errorResp.Users[0].Code, errorResp.Users[0].Message)
+		return NutanixUserResp{}, fmt.Errorf("user not created. errorCode : %d, errorMessage : %s", errorResp.Users[0].Code, errorResp.Users[0].Message)
 	}
 
 	return result, nil
@@ -144,19 +144,26 @@ func (api *API) RemoveUser(ctx context.Context, uuid string) error {
 	delete_url := api.PCEndpoint + deleteEndpoint + string(uuid)
 	delete_request, err := http.NewRequest("DELETE", delete_url, nil)
 	if err != nil {
-		return fmt.Errorf("%w", err)
+		return fmt.Errorf("failed to create http request. %w", err)
 	}
 
 	delete_request.SetBasicAuth(api.PCUsername, api.PCPassword)
 	delete_resp, err := api.HTTPClient.Do(delete_request)
 	if err != nil {
-		return fmt.Errorf("%w", err)
+		return fmt.Errorf("failed to send http request. %w", err)
 	}
 	defer delete_resp.Body.Close()
 
+	decodedResponse, err := io.ReadAll(delete_resp.Body)
+	if err != nil {
+		return fmt.Errorf("%w", err)
+	}
+
 	// Check response status
-	if delete_resp.StatusCode != 204 {
-		return fmt.Errorf("%s", delete_resp.Status)
+	if delete_resp.StatusCode == 404 {
+		return nil
+	} else if delete_resp.StatusCode != 204 {
+		return fmt.Errorf("non-204 response: %d - %s", delete_resp.StatusCode, string(decodedResponse))
 	}
 	return nil
 }
