@@ -29,30 +29,38 @@ func BuildTransportTLS(tlsConfig TlsConfig) (*http.Transport, error) {
 
 		klog.InfoS("insecure connection made.", "insecure", tlsConfig.Insecure, "endpoint", tlsConfig.Endpoint)
 	} else {
-		var rootCAs []byte
-		if strings.Contains(tlsConfig.CACert, "-----BEGIN CERTIFICATE-----") && strings.Contains(tlsConfig.CACert, "-----END CERTIFICATE-----") {
-			rootCAs = []byte(tlsConfig.CACert)
+		if tlsConfig.CACert == "" {
+			transport = &http.Transport{
+				TLSClientConfig: &tls.Config{
+					InsecureSkipVerify: false,
+				},
+			}
 		} else {
-			// Decode base64 CA cert
-			_rootCAs, err := base64.StdEncoding.DecodeString(tlsConfig.CACert)
-			if err != nil {
-				return nil, fmt.Errorf("failed to decode CA cert: %v", err)
+			var rootCAs []byte
+			if strings.Contains(tlsConfig.CACert, "-----BEGIN CERTIFICATE-----") && strings.Contains(tlsConfig.CACert, "-----END CERTIFICATE-----") {
+				rootCAs = []byte(tlsConfig.CACert)
+			} else {
+				// Decode base64 CA cert
+				_rootCAs, err := base64.StdEncoding.DecodeString(tlsConfig.CACert)
+				if err != nil {
+					return nil, fmt.Errorf("failed to decode CA cert: %v", err)
+				}
+
+				rootCAs = _rootCAs
 			}
 
-			rootCAs = _rootCAs
-		}
+			// Create cert pool and add our CA
+			caCertPool := x509.NewCertPool()
+			if !caCertPool.AppendCertsFromPEM(rootCAs) {
+				return nil, fmt.Errorf("failed to append CA cert: %s", tlsConfig.CACert)
+			}
 
-		// Create cert pool and add our CA
-		caCertPool := x509.NewCertPool()
-		if !caCertPool.AppendCertsFromPEM(rootCAs) {
-			return nil, fmt.Errorf("failed to append CA cert: %s", tlsConfig.CACert)
-		}
-
-		transport = &http.Transport{
-			TLSClientConfig: &tls.Config{
-				RootCAs:            caCertPool,
-				InsecureSkipVerify: false,
-			},
+			transport = &http.Transport{
+				TLSClientConfig: &tls.Config{
+					RootCAs:            caCertPool,
+					InsecureSkipVerify: false,
+				},
+			}
 		}
 
 		klog.InfoS("secure connection made.", "insecure", tlsConfig.Insecure, "endpoint", tlsConfig.Endpoint)
