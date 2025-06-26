@@ -31,18 +31,19 @@ import (
 // 1.) for ntnxIamClientOps : mainly for user related operations
 // 2.) for S3 operations : mainly for bucket related operations
 type ProvisionerServer struct {
-	provisioner   string
-	s3Client      *s3cli.S3Agent
-	ntnxIamClient *ntnxIam.API
+	Provisioner   string
+	S3Client      s3cli.S3iface
+	NtnxIamClient ntnxIam.IAMiface
 }
 
 // ProvisionerCreateBucket is a method for creating buckets
 // It is expected to create the same bucket given a bucketName and protocol
 // If the bucket already exists, then it MUST return codes.AlreadyExists
 // Return values
-//    nil -                   Bucket successfully created
-//    codes.AlreadyExists -   Bucket already exists. No more retries
-//    non-nil err -           Internal error                                [requeue'd with exponential backoff]
+//
+//	nil -                   Bucket successfully created
+//	codes.AlreadyExists -   Bucket already exists. No more retries
+//	non-nil err -           Internal error                                [requeue'd with exponential backoff]
 func (s *ProvisionerServer) DriverCreateBucket(ctx context.Context,
 	req *cosi.DriverCreateBucketRequest) (*cosi.DriverCreateBucketResponse, error) {
 	klog.InfoS("Using Nutanix Object store to create Backend Bucket")
@@ -53,7 +54,7 @@ func (s *ProvisionerServer) DriverCreateBucket(ctx context.Context,
 	bucketName := req.GetName()
 	klog.V(3).InfoS("Creating Bucket", "name", bucketName)
 
-	err := s.s3Client.CreateBucket(bucketName)
+	err := s.S3Client.CreateBucket(bucketName)
 	if err != nil {
 		// Check to see if the bucket already exists by above API
 		klog.ErrorS(err, "failed to create bucket", "bucketName", bucketName)
@@ -70,7 +71,7 @@ func (s *ProvisionerServer) DriverCreateBucket(ctx context.Context,
 func (s *ProvisionerServer) DriverDeleteBucket(ctx context.Context,
 	req *cosi.DriverDeleteBucketRequest) (*cosi.DriverDeleteBucketResponse, error) {
 	klog.InfoS("Deleting bucket", "id", req.GetBucketId())
-	if _, err := s.s3Client.DeleteBucket(req.GetBucketId()); err != nil {
+	if _, err := s.S3Client.DeleteBucket(req.GetBucketId()); err != nil {
 		klog.ErrorS(err, "failed to delete bucket %q", req.GetBucketId())
 		return nil, status.Error(codes.Internal, "failed to delete bucket")
 	}
@@ -86,25 +87,25 @@ func (s *ProvisionerServer) DriverGrantBucketAccess(ctx context.Context,
 	// stored in req which is of the form- "ba-<BucketAccessUUID>"
 	// with the suffix "@nutanix.com"
 	userName := req.GetName() + "@nutanix.com"
-	displayName := s.ntnxIamClient.AccountName + "_" + req.GetName()
+	displayName := s.NtnxIamClient.GetAccountName() + "_" + req.GetName()
 	bucketName := req.GetBucketId()
 
 	klog.InfoS("Granting user accessPolicy to bucket", "userName", userName, "displayName",
 		displayName, "bucketName", bucketName)
 
-	// Format : {type: "external", email: <userName>@nutanix.com, displayname: <accountName>_<userName> (optional)}
-	user, err := s.ntnxIamClient.CreateUser(ctx, userName, displayName)
-	if err != nil {
-		klog.ErrorS(err, "failed to create an IAM user for Nutanix Objects")
-		return nil, err
-	}
-
 	// Fetch Bucket Policy
-	policy, err := s.s3Client.GetBucketPolicy(bucketName)
+	policy, err := s.S3Client.GetBucketPolicy(bucketName)
 	if err != nil {
 		if aerr, ok := err.(awserr.Error); ok && aerr.Code() != "NoSuchBucketPolicy" {
 			return nil, status.Error(codes.Internal, "fetching policy failed")
 		}
+	}
+
+	// Format : {type: "external", email: <userName>@nutanix.com, displayname: <accountName>_<userName> (optional)}
+	user, err := s.NtnxIamClient.CreateUser(ctx, userName, displayName)
+	if err != nil {
+		klog.ErrorS(err, "failed to create an IAM user for Nutanix Objects")
+		return nil, err
 	}
 
 	// Share bucket with the newly created IAM user
@@ -120,15 +121,17 @@ func (s *ProvisionerServer) DriverGrantBucketAccess(ctx context.Context,
 	} else {
 		policy = policy.ModifyBucketPolicy(*statement)
 	}
-	_, err = s.s3Client.PutBucketPolicy(bucketName, *policy)
+	_, err = s.S3Client.PutBucketPolicy(bucketName, *policy)
 	if err != nil {
 		klog.ErrorS(err, "failed to set policy")
 		return nil, status.Error(codes.Internal, "failed to set policy")
 	}
 
+	klog.InfoS("Successfully granted access to user.", "userName", userName, "displayName", displayName, "bucketName", bucketName)
+
 	return &cosi.DriverGrantBucketAccessResponse{
 		AccountId:   user.Users[0].UUID,
-		Credentials: fetchUserCredentials(user, s.ntnxIamClient.Endpoint),
+		Credentials: fetchUserCredentials(user, s.NtnxIamClient.GetEndpoint()),
 	}, nil
 }
 
@@ -137,10 +140,12 @@ func (s *ProvisionerServer) DriverRevokeBucketAccess(ctx context.Context,
 
 	klog.InfoS("Deleting user", "id", req.GetAccountId())
 
-	err := s.ntnxIamClient.RemoveUser(ctx, req.GetAccountId())
+	err := s.NtnxIamClient.RemoveUser(ctx, req.GetAccountId())
 	if err != nil {
 		klog.ErrorS(err, "failed to delete user")
 	}
+
+	klog.InfoS("Successfully revoked access of user", "userName", req.GetAccountId(), "bucketName", req.GetBucketId())
 	return &cosi.DriverRevokeBucketAccessResponse{}, nil
 }
 
