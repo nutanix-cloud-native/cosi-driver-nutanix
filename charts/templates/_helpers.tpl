@@ -65,10 +65,14 @@ Create the name of the service account to use
 Create common labels for cosi related resources
 */}}
 {{- define "cosi-driver-nutanix.resource.labels" -}}
-app.kubernetes.io/component: controller
-app.kubernetes.io/name: container-object-storage-interface-controller
+app.kubernetes.io/name: {{ include "cosi-driver-nutanix.name" . }}
+helm.sh/chart: {{ include "cosi-driver-nutanix.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
 app.kubernetes.io/part-of: container-object-storage-interface
-app.kubernetes.io/version: main
+app.kubernetes.io/component: driver-nutanix
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
 {{- end }}
 
 {{/*
