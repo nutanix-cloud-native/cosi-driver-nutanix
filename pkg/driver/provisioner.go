@@ -96,7 +96,8 @@ func (s *ProvisionerServer) DriverGrantBucketAccess(ctx context.Context,
 	// Fetch Bucket Policy
 	policy, err := s.S3Client.GetBucketPolicy(bucketName)
 	if err != nil {
-		if aerr, ok := err.(awserr.Error); ok && aerr.Code() != "NoSuchBucketPolicy" {
+		if aerr, ok := err.(awserr.Error); !ok || aerr.Code() != "NoSuchBucketPolicy" {
+			klog.ErrorS(err, "failed to get bucket policy", "bucketName", bucketName)
 			return nil, status.Error(codes.Internal, "fetching policy failed")
 		}
 	}
@@ -108,7 +109,7 @@ func (s *ProvisionerServer) DriverGrantBucketAccess(ctx context.Context,
 		return nil, status.Error(codes.Internal, "failed to create an IAM user")
 	}
 
-	accountId := user.Users[0].UUID
+	accountId := user.UserID
 
 	// Share bucket with the newly created IAM user
 	statement := s3cli.NewPolicyStatement().
@@ -144,17 +145,34 @@ func (s *ProvisionerServer) DriverRevokeBucketAccess(ctx context.Context,
 
 	policy, err := s.S3Client.GetBucketPolicy(req.GetBucketId())
 	if err != nil {
-		klog.ErrorS(err, "failed to get policy")
-		return nil, status.Error(codes.Internal, "failed to get policy")
+		// A missing bucket policy is not fatal here: the user we are about
+		// to delete simply has no statement to remove. Any other error must
+		// be surfaced so the operation is retried.
+		if aerr, ok := err.(awserr.Error); !ok || aerr.Code() != "NoSuchBucketPolicy" {
+			klog.ErrorS(err, "failed to get policy")
+			return nil, status.Error(codes.Internal, "failed to get policy")
+		}
+		policy = nil
 	}
 	if policy != nil {
 		klog.InfoS("Removing bucket policy statement", "accountId", req.GetAccountId())
 		policy = policy.DropPolicyStatements(req.GetAccountId())
 		if len(policy.Statement) > 0 {
-			_, err = s.S3Client.PutBucketPolicy(req.GetBucketId(), *policy)
-			if err != nil {
+			if _, err = s.S3Client.PutBucketPolicy(req.GetBucketId(), *policy); err != nil {
 				klog.ErrorS(err, "failed to set policy")
 				return nil, status.Error(codes.Internal, "failed to set policy")
+			}
+		} else {
+			// S3 rejects PutBucketPolicy with an empty statement list, so
+			// clear the policy explicitly. If we skipped this call the
+			// stale statement (referencing the user we are about to
+			// delete) would remain on the bucket and break subsequent
+			// GrantBucketAccess with "Invalid principal in policy".
+			if _, err = s.S3Client.DeleteBucketPolicy(req.GetBucketId()); err != nil {
+				if aerr, ok := err.(awserr.Error); !ok || aerr.Code() != "NoSuchBucketPolicy" {
+					klog.ErrorS(err, "failed to delete policy")
+					return nil, status.Error(codes.Internal, "failed to delete policy")
+				}
 			}
 		}
 	}
@@ -171,11 +189,11 @@ func (s *ProvisionerServer) DriverRevokeBucketAccess(ctx context.Context,
 	return &cosi.DriverRevokeBucketAccessResponse{}, nil
 }
 
-func fetchUserCredentials(user ntnxIam.NutanixUserResp, endpoint string) map[string]*cosi.CredentialDetails {
+func fetchUserCredentials(user ntnxIam.UserCredentials, endpoint string) map[string]*cosi.CredentialDetails {
 
 	secretsMap := make(map[string]string)
-	secretsMap["accessKeyID"] = user.Users[0].BucketsAccessKeys[0].AccessKeyID
-	secretsMap["accessSecretKey"] = user.Users[0].BucketsAccessKeys[0].SecretAccessKey
+	secretsMap["accessKeyID"] = user.AccessKeyID
+	secretsMap["accessSecretKey"] = user.SecretAccessKey
 	secretsMap["endpoint"] = endpoint
 	// region mapping needs to be updated
 	secretsMap["region"] = "us-east-1"

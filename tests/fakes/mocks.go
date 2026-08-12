@@ -17,13 +17,13 @@ type MockHTTPClient struct {
 func (m MockHTTPClient) Do(req *http.Request) (*http.Response, error) { return m.DoFunc(req) }
 
 type MockIAM struct {
-	CreateUserFunc     func(ctx context.Context, username string, display_name string) (admin.NutanixUserResp, error)
+	CreateUserFunc     func(ctx context.Context, username string, display_name string) (admin.UserCredentials, error)
 	RemoveUserFunc     func(ctx context.Context, uuid string) error
 	GetAccountNameFunc func() string
 	GetEndpointFunc    func() string
 }
 
-func (m MockIAM) CreateUser(ctx context.Context, username string, display_name string) (admin.NutanixUserResp, error) {
+func (m MockIAM) CreateUser(ctx context.Context, username string, display_name string) (admin.UserCredentials, error) {
 	return m.CreateUserFunc(ctx, username, display_name)
 }
 func (m MockIAM) RemoveUser(ctx context.Context, uuid string) error {
@@ -33,13 +33,14 @@ func (m MockIAM) GetAccountName() string { return m.GetAccountNameFunc() }
 func (m MockIAM) GetEndpoint() string    { return m.GetEndpointFunc() }
 
 type MockS3Client struct {
-	CreateBucketFunc    func(input *s3.CreateBucketInput) (*s3.CreateBucketOutput, error)
-	DeleteBucketFunc    func(input *s3.DeleteBucketInput) (*s3.DeleteBucketOutput, error)
-	DeleteObjectFunc    func(input *s3.DeleteObjectInput) (*s3.DeleteObjectOutput, error)
-	PutObjectFunc       func(input *s3.PutObjectInput) (*s3.PutObjectOutput, error)
-	GetObjectFunc       func(input *s3.GetObjectInput) (*s3.GetObjectOutput, error)
-	GetBucketPolicyFunc func(input *s3.GetBucketPolicyInput) (*s3.GetBucketPolicyOutput, error)
-	PutBucketPolicyFunc func(input *s3.PutBucketPolicyInput) (*s3.PutBucketPolicyOutput, error)
+	CreateBucketFunc       func(input *s3.CreateBucketInput) (*s3.CreateBucketOutput, error)
+	DeleteBucketFunc       func(input *s3.DeleteBucketInput) (*s3.DeleteBucketOutput, error)
+	DeleteObjectFunc       func(input *s3.DeleteObjectInput) (*s3.DeleteObjectOutput, error)
+	PutObjectFunc          func(input *s3.PutObjectInput) (*s3.PutObjectOutput, error)
+	GetObjectFunc          func(input *s3.GetObjectInput) (*s3.GetObjectOutput, error)
+	GetBucketPolicyFunc    func(input *s3.GetBucketPolicyInput) (*s3.GetBucketPolicyOutput, error)
+	PutBucketPolicyFunc    func(input *s3.PutBucketPolicyInput) (*s3.PutBucketPolicyOutput, error)
+	DeleteBucketPolicyFunc func(input *s3.DeleteBucketPolicyInput) (*s3.DeleteBucketPolicyOutput, error)
 }
 
 func (m *MockS3Client) CreateBucket(input *s3.CreateBucketInput) (*s3.CreateBucketOutput, error) {
@@ -63,12 +64,16 @@ func (m *MockS3Client) GetBucketPolicy(input *s3.GetBucketPolicyInput) (*s3.GetB
 func (m *MockS3Client) PutBucketPolicy(input *s3.PutBucketPolicyInput) (*s3.PutBucketPolicyOutput, error) {
 	return m.PutBucketPolicyFunc(input)
 }
+func (m *MockS3Client) DeleteBucketPolicy(input *s3.DeleteBucketPolicyInput) (*s3.DeleteBucketPolicyOutput, error) {
+	return m.DeleteBucketPolicyFunc(input)
+}
 
 type MockProvisionerS3 struct {
-	CreateBucketFunc    func(name string) error
-	DeleteBucketFunc    func(name string) (bool, error)
-	GetBucketPolicyFunc func(bucket string) (*s3client.BucketPolicy, error)
-	PutBucketPolicyFunc func(bucket string, policy s3client.BucketPolicy) (*s3.PutBucketPolicyOutput, error)
+	CreateBucketFunc       func(name string) error
+	DeleteBucketFunc       func(name string) (bool, error)
+	GetBucketPolicyFunc    func(bucket string) (*s3client.BucketPolicy, error)
+	PutBucketPolicyFunc    func(bucket string, policy s3client.BucketPolicy) (*s3.PutBucketPolicyOutput, error)
+	DeleteBucketPolicyFunc func(bucket string) (*s3.DeleteBucketPolicyOutput, error)
 }
 
 func (m MockProvisionerS3) CreateBucket(name string) error         { return m.CreateBucketFunc(name) }
@@ -78,4 +83,7 @@ func (m MockProvisionerS3) GetBucketPolicy(bucket string) (*s3client.BucketPolic
 }
 func (m MockProvisionerS3) PutBucketPolicy(bucket string, policy s3client.BucketPolicy) (*s3.PutBucketPolicyOutput, error) {
 	return m.PutBucketPolicyFunc(bucket, policy)
+}
+func (m MockProvisionerS3) DeleteBucketPolicy(bucket string) (*s3.DeleteBucketPolicyOutput, error) {
+	return m.DeleteBucketPolicyFunc(bucket)
 }

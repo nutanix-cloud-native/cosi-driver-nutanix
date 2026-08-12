@@ -63,6 +63,40 @@ func TestPutBucketPolicy(t *testing.T) {
 	})
 }
 
+func TestDeleteBucketPolicy(t *testing.T) {
+	t.Run("TestDeleteBucketPolicy_Success", func(t *testing.T) {
+		var capturedInput *s3.DeleteBucketPolicyInput
+		mockClient := &mocks.MockS3Client{
+			DeleteBucketPolicyFunc: func(input *s3.DeleteBucketPolicyInput) (*s3.DeleteBucketPolicyOutput, error) {
+				capturedInput = input
+				return &s3.DeleteBucketPolicyOutput{}, nil
+			},
+		}
+		agent := &s3client.S3Agent{Client: mockClient}
+
+		out, err := agent.DeleteBucketPolicy("test-bucket")
+		require.NoError(t, err)
+		assert.NotNil(t, out)
+		require.NotNil(t, capturedInput)
+		assert.Equal(t, "test-bucket", aws.StringValue(capturedInput.Bucket))
+	})
+
+	t.Run("TestDeleteBucketPolicy_Error", func(t *testing.T) {
+		expectedErr := errors.New("delete failed")
+		mockClient := &mocks.MockS3Client{
+			DeleteBucketPolicyFunc: func(input *s3.DeleteBucketPolicyInput) (*s3.DeleteBucketPolicyOutput, error) {
+				return nil, expectedErr
+			},
+		}
+		agent := &s3client.S3Agent{Client: mockClient}
+
+		out, err := agent.DeleteBucketPolicy("test-bucket")
+		assert.Error(t, err)
+		assert.Nil(t, out)
+		assert.Equal(t, expectedErr, err)
+	})
+}
+
 func TestGetBucketPolicy(t *testing.T) {
 	t.Run("TestGetBucketPolicy_Success", func(t *testing.T) {
 		ps := s3client.PolicyStatement{

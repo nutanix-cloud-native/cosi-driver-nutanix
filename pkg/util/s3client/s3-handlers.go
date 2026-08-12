@@ -42,6 +42,7 @@ type S3iface interface {
 	DeleteBucket(name string) (bool, error)
 	GetBucketPolicy(bucket string) (*BucketPolicy, error)
 	PutBucketPolicy(bucket string, policy BucketPolicy) (*s3.PutBucketPolicyOutput, error)
+	DeleteBucketPolicy(bucket string) (*s3.DeleteBucketPolicyOutput, error)
 }
 
 type S3client interface {
@@ -52,6 +53,7 @@ type S3client interface {
 	GetObject(input *s3.GetObjectInput) (*s3.GetObjectOutput, error)
 	GetBucketPolicy(input *s3.GetBucketPolicyInput) (*s3.GetBucketPolicyOutput, error)
 	PutBucketPolicy(input *s3.PutBucketPolicyInput) (*s3.PutBucketPolicyOutput, error)
+	DeleteBucketPolicy(input *s3.DeleteBucketPolicyInput) (*s3.DeleteBucketPolicyOutput, error)
 }
 
 // S3Agent wraps the s3.S3 structure to allow for wrapper methods

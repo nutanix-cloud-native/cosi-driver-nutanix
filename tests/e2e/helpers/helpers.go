@@ -291,8 +291,15 @@ func CreateNewS3ClientFromSecret(ctx context.Context, k8sClient *kubernetes.Clie
 	return newS3Client, err
 }
 
+// v4IAMUsersEndpoint is the list/create endpoint for the v4 IAM users
+// API. Kept in sync with pkg/admin/user.go which owns the same paths.
+const (
+	v4IAMUsersEndpoint   = "/api/iam/v4.0/authn/users"
+	v4IAMGetUserEndpoint = "/api/iam/v4.0/authn/users/%s"
+)
+
 func checkUserExistsUtil(ctx context.Context, api *admin.API, uuid string) (bool, error) {
-	url := api.PCEndpoint + "/oss/iam_proxy/users/" + string(uuid)
+	url := api.PCEndpoint + fmt.Sprintf(v4IAMGetUserEndpoint, uuid)
 	request, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return false, fmt.Errorf("failed to create http request. %w", err)
@@ -305,9 +312,9 @@ func checkUserExistsUtil(ctx context.Context, api *admin.API, uuid string) (bool
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode == 404 {
+	if resp.StatusCode == http.StatusNotFound {
 		return false, nil
-	} else if resp.StatusCode == 200 {
+	} else if resp.StatusCode == http.StatusOK {
 		return true, nil
 	} else {
 		return false, fmt.Errorf("non-200 response: %d", resp.StatusCode)
@@ -358,11 +365,19 @@ func CheckUserDeletion(ctx context.Context, api *admin.API, uuid string) error {
 	return nil
 }
 
+// GetNumOfUsersInObjectstore returns the total number of IAM users
+// visible via the v4 users list endpoint. The v4 list response is
+// paginated, so we rely on metadata.totalAvailableResults for the true
+// count rather than len(data), which would only reflect the current
+// page.
 func GetNumOfUsersInObjectstore(ctx context.Context, api *admin.API) (int, error) {
 	var userResp struct {
-		Length int `json:"length"`
+		Metadata struct {
+			TotalAvailableResults int `json:"totalAvailableResults"`
+		} `json:"metadata"`
+		Data []admin.UserData `json:"data"`
 	}
-	url := api.PCEndpoint + "/oss/iam_proxy/users"
+	url := api.PCEndpoint + v4IAMUsersEndpoint
 	request, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return -1, fmt.Errorf("failed to create http request. %w", err)
@@ -379,10 +394,17 @@ func GetNumOfUsersInObjectstore(ctx context.Context, api *admin.API) (int, error
 		return -1, err
 	}
 
+	if resp.StatusCode != http.StatusOK {
+		return -1, fmt.Errorf("non-200 response: %d - %s", resp.StatusCode, string(decodedResponse))
+	}
+
 	err = json.Unmarshal(decodedResponse, &userResp)
 	if err != nil {
 		return -1, err
 	}
 
-	return userResp.Length, nil
+	if userResp.Metadata.TotalAvailableResults > 0 {
+		return userResp.Metadata.TotalAvailableResults, nil
+	}
+	return len(userResp.Data), nil
 }

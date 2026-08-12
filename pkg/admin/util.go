@@ -34,7 +34,7 @@ type HTTPClient interface {
 }
 
 type IAMiface interface {
-	CreateUser(ctx context.Context, username string, display_name string) (NutanixUserResp, error)
+	CreateUser(ctx context.Context, username string, display_name string) (UserCredentials, error)
 	RemoveUser(ctx context.Context, uuid string) error
 	GetAccountName() string
 	GetEndpoint() string

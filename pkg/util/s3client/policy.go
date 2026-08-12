@@ -246,6 +246,16 @@ func (s *S3Agent) PutBucketPolicy(bucket string, policy BucketPolicy) (*s3.PutBu
 	return out, nil
 }
 
+// DeleteBucketPolicy removes the policy from the bucket entirely.
+// S3 does not accept a PutBucketPolicy call with zero statements, so this
+// must be used when the caller wants to clear the policy (for example,
+// after revoking the last principal).
+func (s *S3Agent) DeleteBucketPolicy(bucket string) (*s3.DeleteBucketPolicyOutput, error) {
+	return s.Client.DeleteBucketPolicy(&s3.DeleteBucketPolicyInput{
+		Bucket: &bucket,
+	})
+}
+
 func (s *S3Agent) GetBucketPolicy(bucket string) (*BucketPolicy, error) {
 	out, err := s.Client.GetBucketPolicy(&s3.GetBucketPolicyInput{
 		Bucket: &bucket,
